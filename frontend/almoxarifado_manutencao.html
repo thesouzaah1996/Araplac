@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Araplac Móveis • Almoxarifado de Manutenção</title>
+
+  <!-- Segurança (o backend pode reforçar via cabeçalho também) -->
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self'; connect-src 'self' http://localhost:8080 https://localhost:8080;">
+  <meta name="referrer" content="no-referrer">
+  <!-- Se o backend usar meta de CSRF, preencha o content abaixo (opcional; cookie XSRF-TOKEN também é suportado pelo JS) -->
+  <meta name="csrf-token" content="" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="almoxarifado_manutencao.css" />
+  <script src="almoxarifado_manutencao.js" defer></script>
+</head>
+<body>
+  <!-- ===== Header / Topbar ===== -->
+  <header class="topbar" role="banner">
+    <div class="topbar-inner">
+      <a class="brand" href="#" aria-label="Araplac Móveis - Início">
+        <img src="img/logo.png" alt="Araplac Móveis" class="logo-transparent" />
+        <div class="brand-text">
+          <span class="brand-title">Araplac Móveis</span>
+          <span class="brand-sub">Almoxarifado de Manutenção</span>
+        </div>
+      </a>
+
+      <!-- Menu de usuário estilo Teams -->
+      <div class="profile-area">
+        <button id="profileBtn"
+                class="avatar-btn"
+                aria-haspopup="menu"
+                aria-expanded="false"
+                aria-controls="userMenu"
+                title="Conta">
+          <!-- Se tiver foto, troque por <img class="avatar" src="URL-DA-FOTO" alt="Seu perfil"> -->
+          <span class="avatar" aria-hidden="true">MF</span>
+        </button>
+
+        <div id="userMenu" class="menu" role="menu" hidden>
+          <div class="menu-header">
+            <strong id="userName">Matheus</strong>
+            <small id="userEmail">usuario@empresa.com</small>
+          </div>
+          <button role="menuitem" id="logoutBtn" class="menu-item">Sair</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== Conteúdo ===== -->
+  <main class="container" role="main">
+    <section class="card" aria-labelledby="tbl-title">
+      <header class="card-header">
+        <div>
+          <h2 id="tbl-title">Controle de Itens</h2>
+          <p class="helper">Dados vêm do backend; esta UI só renderiza e envia ações com segurança.</p>
+        </div>
+        <div class="toolbar">
+          <button class="btn btn-primary" data-open="addModal" id="btnAdd">+ Adicionar item</button>
+        </div>
+      </header>
+
+      <div class="table-wrapper" role="region" aria-label="Tabela de itens do almoxarifado" tabindex="0">
+        <table class="data-table" id="table">
+          <thead>
+            <tr>
+              <th scope="col">Código</th>
+              <th scope="col">Descrição</th>
+              <th scope="col">Categoria</th>
+              <th scope="col">Unidade</th>
+              <th scope="col">Quantidade</th>
+              <th scope="col">Localização</th>
+              <th scope="col">Status</th>
+              <th scope="col">Última Mov.</th>
+              <th scope="col" class="col-actions">Ações</th>
+            </tr>
+          </thead>
+          <tbody id="tbody"><!-- preenchido via JS --></tbody>
+          <tfoot>
+            <tr>
+              <td colspan="9" class="foot-note">* Integre os endpoints REST e a tabela será preenchida automaticamente.</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===== Footer ===== -->
+  <footer class="app-footer" role="contentinfo">
+    <small>© 2025 Araplac Móveis — Almoxarifado de Manutenção</small>
+  </footer>
+
+  <!-- ===== Modal: Adicionar ===== -->
+  <div class="modal" id="addModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="addTitle">
+    <div class="modal-card">
+      <header class="modal-header">
+        <h3 id="addTitle">Adicionar produto</h3>
+        <button class="icon-btn" data-close aria-label="Fechar">×</button>
+      </header>
+      <form id="formAdd" class="grid" autocomplete="off">
+        <input name="codigo" placeholder="Código (ex: MT-0100)" required />
+        <input name="descricao" placeholder="Descrição" required />
+        <input name="categoria" placeholder="Categoria" required />
+        <input name="unidade" placeholder="Unidade (un, par, m²...)" required />
+        <input name="quantidade" type="number" min="0" placeholder="Quantidade" required />
+        <input name="localizacao" placeholder="Localização" required />
+        <select name="status" required>
+          <option value="OK">OK</option>
+          <option value="Baixo">Baixo</option>
+          <option value="Crítico">Crítico</option>
+        </select>
+        <input name="ultimaMov" type="date" required />
+        <div class="modal-actions">
+          <button type="button" class="btn" data-close>Cancelar</button>
+          <button class="btn btn-primary" type="submit">Salvar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===== Modal: Editar ===== -->
+  <div class="modal" id="editModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="editTitle">
+    <div class="modal-card">
+      <header class="modal-header">
+        <h3 id="editTitle">Editar produto</h3>
+        <button class="icon-btn" data-close aria-label="Fechar">×</button>
+      </header>
+      <form id="formEdit" class="grid" autocomplete="off">
+        <input type="hidden" name="id" />
+        <input name="codigo" placeholder="Código" required />
+        <input name="descricao" placeholder="Descrição" required />
+        <input name="categoria" placeholder="Categoria" required />
+        <input name="unidade" placeholder="Unidade" required />
+        <input name="quantidade" type="number" min="0" placeholder="Quantidade" required />
+        <input name="localizacao" placeholder="Localização" required />
+        <select name="status" required>
+          <option value="OK">OK</option>
+          <option value="Baixo">Baixo</option>
+          <option value="Crítico">Crítico</option>
+        </select>
+        <input name="ultimaMov" type="date" required />
+        <div class="modal-actions">
+          <button type="button" class="btn" data-close>Cancelar</button>
+          <button class="btn btn-primary" type="submit">Atualizar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===== Modal: Excluir ===== -->
+  <div class="modal" id="deleteModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="delTitle">
+    <div class="modal-card">
+      <header class="modal-header">
+        <h3 id="delTitle">Remover produto</h3>
+        <button class="icon-btn" data-close aria-label="Fechar">×</button>
+      </header>
+      <p>Tem certeza que deseja remover o produto <strong id="delItem"></strong>?</p>
+      <div class="modal-actions">
+        <button class="btn" data-close>Cancelar</button>
+        <button class="btn btn-danger" id="confirmDelete">Remover</button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
