@@ -2,7 +2,6 @@
    UI/JS - Almoxarifado
    ============================ */
 
-// Backend
 const API_BASE = "http://localhost:8080";
 
 const ENDPOINT = {
@@ -12,15 +11,18 @@ const ENDPOINT = {
   DELETE: (id) => `${API_BASE}/api/itens/${encodeURIComponent(id)}`,
 };
 
-const tbody   = document.getElementById("tbody");
-const formAdd = document.getElementById("formAdd");
+const tbody    = document.getElementById("tbody");
+const formAdd  = document.getElementById("formAdd");
 const formEdit = document.getElementById("formEdit");
 const delItemEl = document.getElementById("delItem");
 
 let currentDeleteId = null;
 let itemsIndex = new Map();
 
-/* ---------- Categoria: enum <-> label ---------- */
+/* ---------- Categoria: enum <-> label (aceita número do banco) ---------- */
+const CategoriaOrder = [
+  "MATERIA_PRIMA","FERRAGEM","ACABAMENTO","CONSUMIVEIS","EMBALAGENS","EPI"
+];
 const CategoriaLabel = {
   MATERIA_PRIMA: "Matéria-prima",
   FERRAGEM: "Ferragem",
@@ -29,13 +31,20 @@ const CategoriaLabel = {
   EMBALAGENS: "Embalagens",
   EPI: "EPI",
 };
-const enumToLabel = (v) => CategoriaLabel[v] || v || "";
+function normalizeCategoria(v){
+  if (v == null) return "";
+  const s = String(v).trim();
+  if (/^\d+$/.test(s)) {
+    const idx = Math.max(1, Math.min(6, parseInt(s,10))) - 1;
+    return CategoriaOrder[idx];
+  }
+  return s.toUpperCase();
+}
+const enumToLabel = (v) => CategoriaLabel[normalizeCategoria(v)] || "";
 
 /* ---------- Helpers ---------- */
 const openModal = (id) => document.getElementById(id).setAttribute("aria-hidden", "false");
-const closeModals = () => document
-  .querySelectorAll(".modal[aria-hidden='false']")
-  .forEach((m) => m.setAttribute("aria-hidden", "true"));
+const closeModals = () => document.querySelectorAll(".modal[aria-hidden='false']").forEach(m => m.setAttribute("aria-hidden","true"));
 
 document.addEventListener("click", (e) => {
   const openId = e.target.getAttribute("data-open");
@@ -46,9 +55,7 @@ document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeModal
 
 function fmtDate(d) {
   if (!d) return "";
-  const date = typeof d === "string"
-    ? (d.length <= 10 ? new Date(`${d}T00:00:00`) : new Date(d))
-    : d;
+  const date = typeof d === "string" ? (d.length <= 10 ? new Date(`${d}T00:00:00`) : new Date(d)) : d;
   return isNaN(date) ? String(d) : date.toLocaleDateString("pt-BR");
 }
 
@@ -57,19 +64,18 @@ function fromBackend(it) {
     id: it.id,
     codigo: it.codigo ?? it.codigoProduto ?? "",
     descricao: it.descricao ?? "",
-    categoria: it.categoria ?? "",
+    categoria: normalizeCategoria(it.categoria ?? ""),
     unidade: it.unidade ?? "",
     quantidade: it.quantidade ?? 0,
     localizacao: it.localizacao ?? it.localizacaoPrateleira ?? "",
     ultimaMov: it.ultimaMov ?? it.data ?? "",
-    // tenta ambos (sem/como acento) por segurança
     responsavelRecebimento: it.responsavelRecebimento ?? it["responsávelRecebimento"] ?? it["responsável_recebimento"] ?? "",
   };
 }
 
 function toBackendPayload(formEl) {
   const fd = new FormData(formEl);
-  const categoria = (fd.get("categoria") || "").toString().trim().toUpperCase();
+  const categoria = normalizeCategoria(fd.get("categoria") || "");
   const dataField = fd.get("ultimaMov");
   const dataISO = dataField ? `${dataField}T00:00:00` : null;
 
@@ -97,9 +103,7 @@ function badge(status) {
   return `<span class="badge ${cls}">${status}</span>`;
 }
 function escapeHtml(s) {
-  return String(s ?? "")
-    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+  return String(s ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");
 }
 
 /* ---------- Render ---------- */
@@ -108,11 +112,7 @@ function rowTemplate(item) {
   const status = statusFromQuantity(item.quantidade);
   return `<tr data-id="${id}">
     <td>${escapeHtml(item.codigo ?? "")}</td>
-    <td class="td-desc">
-      <span class="line-clamp-1" title="${escapeHtml(item.descricao ?? "")}">
-        ${escapeHtml(item.descricao ?? "")}
-      </span>
-    </td>
+    <td class="td-desc"><span class="line-clamp-1" title="${escapeHtml(item.descricao ?? "")}">${escapeHtml(item.descricao ?? "")}</span></td>
     <td>${escapeHtml(enumToLabel(item.categoria))}</td>
     <td>${escapeHtml(item.unidade ?? "")}</td>
     <td>${item.quantidade ?? 0}</td>
@@ -130,10 +130,7 @@ function rowTemplate(item) {
 function render(items) {
   tbody.innerHTML = items.map(rowTemplate).join("");
   itemsIndex.clear();
-  for (const it of items) {
-    const id = String(it.id ?? it.codigo);
-    itemsIndex.set(id, it);
-  }
+  for (const it of items) itemsIndex.set(String(it.id ?? it.codigo), it);
 }
 
 /* ---------- Load ---------- */
@@ -154,49 +151,36 @@ formAdd.addEventListener("submit", async (e) => {
   e.preventDefault();
   const payload = toBackendPayload(formAdd);
   try {
-    const res = await fetch(ENDPOINT.CREATE(), {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-    if (!res.ok) {
-      const text = await res.text().catch(() => "");
-      throw new Error(`Falha ao criar (${res.status} ${res.statusText}) ${text}`);
-    }
+    const res = await fetch(ENDPOINT.CREATE(), { method:"POST", headers:{ "Content-Type":"application/json" }, body: JSON.stringify(payload) });
+    if (!res.ok) { const t = await res.text().catch(()=> ""); throw new Error(`Falha ao criar (${res.status} ${res.statusText}) ${t}`); }
     const created = fromBackend(await res.json());
-    const temp = document.createElement("tbody");
-    temp.innerHTML = rowTemplate(created);
+    const temp = document.createElement("tbody"); temp.innerHTML = rowTemplate(created);
     tbody.prepend(temp.firstElementChild);
     itemsIndex.set(String(created.id ?? created.codigo), created);
-    formAdd.reset();
-    closeModals();
-  } catch (err) {
-    console.error(err);
-    alert("Erro ao salvar. Verifique o backend.");
-  }
+    formAdd.reset(); closeModals();
+  } catch (err) { console.error(err); alert("Erro ao salvar. Verifique o backend."); }
 });
 
-/* ---------- Edit/Delete/View delegados ---------- */
+/* ---------- Delegados: view / edit / delete ---------- */
 tbody.addEventListener("click", (e) => {
   const btn = e.target.closest("button[data-action]");
   if (!btn) return;
   const id = btn.getAttribute("data-id");
   const action = btn.getAttribute("data-action");
+  const it = itemsIndex.get(String(id));
+  if (!it) return;
 
   if (action === "view") {
-    const it = itemsIndex.get(String(id));
-    if (!it) return;
+    // chips
+    document.getElementById("vhCodigoChip").textContent = it.codigo ?? "—";
+    const st = statusFromQuantity(it.quantidade);
+    const statusEl = document.getElementById("vhStatus");
+    statusEl.textContent = `Status: ${st}`;
+    statusEl.className = `pill ${st==='OK'?'pill-ok':st==='Baixo'?'pill-warn':'pill-err'}`;
 
-    // header meta
-    document.getElementById("vhCodigo").textContent = it.codigo ?? "";
-    const status = statusFromQuantity(it.quantidade);
-    const pillStatus = document.getElementById("vhStatus");
-    pillStatus.textContent = `Status: ${status}`;
-    pillStatus.className = "pill";
-
-    const pillUnd = document.getElementById("vhUnidade");
-    pillUnd.textContent = `Unidade: ${it.unidade ?? ""}`;
-    pillUnd.className = "pill";
+    const undEl = document.getElementById("vhUnidade");
+    undEl.textContent = `Unidade: ${it.unidade || '—'}`;
+    undEl.className = "pill";
 
     // props
     document.getElementById("vCodigo").textContent = it.codigo ?? "";
@@ -213,29 +197,22 @@ tbody.addEventListener("click", (e) => {
   }
 
   if (action === "edit") {
-    const it = itemsIndex.get(String(id));
-    if (!it) return;
-
-    // IMPORTANT: use elements["id"] por causa do conflito com form.id
     formEdit.elements["id"].value = it.id ?? it.codigo ?? "";
     formEdit.elements["codigo"].value = it.codigo ?? "";
     formEdit.elements["descricao"].value = it.descricao ?? "";
-    formEdit.elements["categoria"].value = it.categoria ?? "";
+    formEdit.elements["categoria"].value = normalizeCategoria(it.categoria) || "";
     formEdit.elements["unidade"].value = it.unidade ?? "";
     formEdit.elements["quantidade"].value = it.quantidade ?? 0;
     formEdit.elements["localizacao"].value = it.localizacao ?? "";
     formEdit.elements["ultimaMov"].value = (typeof it.ultimaMov === "string" ? it.ultimaMov : "").toString().substring(0,10);
-    if (formEdit.elements["responsavelRecebimento"])
-      formEdit.elements["responsavelRecebimento"].value = it.responsavelRecebimento ?? "";
-
+    if (formEdit.elements["responsavelRecebimento"]) formEdit.elements["responsavelRecebimento"].value = it.responsavelRecebimento ?? "";
     openModal("editModal");
     return;
   }
 
   if (action === "delete") {
-    const it = itemsIndex.get(String(id));
     currentDeleteId = id;
-    delItemEl.textContent = it ? `${it.codigo ?? id} — ${it.descricao ?? ""}` : id;
+    delItemEl.textContent = `${it.codigo ?? id} — ${it.descricao ?? ""}`;
     openModal("deleteModal");
     return;
   }
@@ -247,21 +224,14 @@ document.getElementById("formEdit").addEventListener("submit", async (e) => {
   const id = e.currentTarget.elements["id"].value;
   const payload = toBackendPayload(e.currentTarget);
   try {
-    const res = await fetch(ENDPOINT.UPDATE(id), {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
+    const res = await fetch(ENDPOINT.UPDATE(id), { method:"PUT", headers:{ "Content-Type":"application/json" }, body: JSON.stringify(payload) });
     if (!res.ok) throw new Error(`Falha ao atualizar (${res.status})`);
     const updated = fromBackend(await res.json());
     const tr = tbody.querySelector(`tr[data-id="${CSS.escape(String(id))}"]`);
     if (tr) tr.outerHTML = rowTemplate(updated);
     itemsIndex.set(String(updated.id ?? updated.codigo), updated);
     closeModals();
-  } catch (err) {
-    console.error(err);
-    alert("Erro ao atualizar. Verifique o backend.");
-  }
+  } catch (err) { console.error(err); alert("Erro ao atualizar. Verifique o backend."); }
 });
 
 /* ---------- Delete confirm ---------- */
@@ -269,27 +239,19 @@ document.getElementById("confirmDelete").addEventListener("click", async (e) => 
   e.preventDefault();
   if (!currentDeleteId) return;
   try {
-    const res = await fetch(ENDPOINT.DELETE(currentDeleteId), { method: "DELETE" });
+    const res = await fetch(ENDPOINT.DELETE(currentDeleteId), { method:"DELETE" });
     if (!res.ok) throw new Error(`Falha ao excluir (${res.status})`);
     const tr = tbody.querySelector(`tr[data-id="${CSS.escape(String(currentDeleteId))}"]`);
     if (tr) tr.remove();
     itemsIndex.delete(String(currentDeleteId));
     currentDeleteId = null;
     closeModals();
-  } catch (err) {
-    console.error(err);
-    alert("Erro ao excluir. Verifique o backend.");
-  }
+  } catch (err) { console.error(err); alert("Erro ao excluir. Verifique o backend."); }
 });
 
 /* ---------- Logout (placeholder) ---------- */
 const logoutBtn = document.getElementById("logoutBtn");
-if (logoutBtn) {
-  logoutBtn.addEventListener("click", (e) => {
-    e.preventDefault();
-    alert("Logout (exemplo).");
-  });
-}
+if (logoutBtn) logoutBtn.addEventListener("click", (e) => { e.preventDefault(); alert("Logout (exemplo)."); });
 
 /* ---------- Init ---------- */
 loadItems();

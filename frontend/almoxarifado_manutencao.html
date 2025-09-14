@@ -41,7 +41,6 @@
             <a href="#" class="menu-item">Meu perfil</a>
             <a href="#" class="menu-item">Configurações</a>
 
-            <div class="menu-section">Ajuda</div>
             <a href="#" class="menu-item">Central de ajuda</a>
 
             <button role="menuitem" id="logoutBtn" class="menu-item danger">Sair</button>
@@ -80,11 +79,6 @@
             </tr>
           </thead>
           <tbody id="tbody"><!-- preenchido via JS --></tbody>
-          <tfoot>
-            <tr>
-              <td colspan="9" class="foot-note">* Integre os endpoints REST e a tabela será preenchida automaticamente.</td>
-            </tr>
-          </tfoot>
         </table>
       </div>
     </section>
@@ -160,43 +154,69 @@
     </div>
   </div>
 
-  <!-- ===== Modal: Ver Detalhes ===== -->
-  <div class="modal" id="viewModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="viewTitle">
-    <div class="modal-card modal-card-lg">
-      <header class="modal-header">
-        <div class="view-head">
-          <div class="vh-icon" aria-hidden="true">📦</div>
-          <div>
-            <h3 id="viewTitle">Detalhes do produto</h3>
-            <div class="vh-sub">
-              <span id="vhCodigo" class="muted"></span>
-            </div>
-          </div>
+<!-- ===== Modal: Ver Detalhes (visual melhor em linhas) ===== -->
+<div class="modal" id="viewModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="viewTitle">
+  <div class="modal-card modal-card-lg">
+    <header class="modal-header vh-header">
+      <div class="vh-top">
+        <div class="vh-icon" aria-hidden="true">📦</div>
+        <div class="vh-title">
+          <h3 id="viewTitle">Detalhes do produto</h3>
+          <div class="vh-sub"><span class="chip" id="vhCodigoChip">—</span></div>
         </div>
-        <button class="icon-btn" data-close aria-label="Fechar">×</button>
-      </header>
-
-      <div class="vh-meta">
-        <span id="vhStatus" class="pill">Status</span>
-        <span id="vhUnidade" class="pill">Unidade</span>
       </div>
+      <button class="icon-btn" data-close aria-label="Fechar">×</button>
+    </header>
 
-      <dl class="props">
-        <dt>Código</dt>              <dd id="vCodigo"></dd>
-        <dt>Descrição</dt>           <dd id="vDescricao"></dd>
-        <dt>Categoria</dt>           <dd id="vCategoria"></dd>
-        <dt>Unidade</dt>             <dd id="vUnidade"></dd>
-        <dt>Quantidade</dt>          <dd id="vQuantidade"></dd>
-        <dt>Localização</dt>         <dd id="vLocalizacao"></dd>
-        <dt>Última Movimentação</dt> <dd id="vUltimaMov"></dd>
-        <dt>Responsável</dt>         <dd id="vResp"></dd>
-      </dl>
+    <div class="vh-meta">
+      <span id="vhStatus"  class="pill">Status</span>
+      <span id="vhUnidade" class="pill">Unidade</span>
+    </div>
 
-      <div class="modal-actions end">
-        <button class="btn" data-close>Fechar</button>
-      </div>
+    <hr class="divider"/>
+
+    <!-- LISTA EM LINHAS COM HOVER -->
+    <ul class="kv-list" role="list">
+      <li class="kv-row">
+        <span class="kv-key">Código</span>
+        <span class="kv-val" id="vCodigo"></span>
+      </li>
+      <li class="kv-row">
+        <span class="kv-key">Descrição</span>
+        <span class="kv-val" id="vDescricao"></span>
+      </li>
+      <li class="kv-row">
+        <span class="kv-key">Categoria</span>
+        <span class="kv-val" id="vCategoria"></span>
+      </li>
+      <li class="kv-row">
+        <span class="kv-key">Unidade</span>
+        <span class="kv-val" id="vUnidade"></span>
+      </li>
+      <li class="kv-row">
+        <span class="kv-key">Quantidade</span>
+        <span class="kv-val" id="vQuantidade"></span>
+      </li>
+      <li class="kv-row">
+        <span class="kv-key">Localização</span>
+        <span class="kv-val" id="vLocalizacao"></span>
+      </li>
+      <li class="kv-row">
+        <span class="kv-key">Última Movimentação</span>
+        <span class="kv-val" id="vUltimaMov"></span>
+      </li>
+      <li class="kv-row">
+        <span class="kv-key">Responsável</span>
+        <span class="kv-val" id="vResp"></span>
+      </li>
+    </ul>
+
+    <div class="modal-actions end">
+      <button class="btn" data-close>Fechar</button>
     </div>
   </div>
+</div>
+
 
   <!-- ===== Modal: Excluir ===== -->
   <div class="modal" id="deleteModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="delTitle">
