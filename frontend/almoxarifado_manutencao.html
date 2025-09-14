@@ -5,12 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Araplac Móveis • Almoxarifado de Manutenção</title>
 
-  <!-- Segurança (o backend pode reforçar via cabeçalho também) -->
+  <!-- Segurança -->
   <meta http-equiv="Content-Security-Policy"
         content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self'; connect-src 'self' http://localhost:8080 https://localhost:8080;">
   <meta name="referrer" content="no-referrer">
-  <!-- Se o backend usar meta de CSRF, preencha o content abaixo (opcional; cookie XSRF-TOKEN também é suportado pelo JS) -->
-  <meta name="csrf-token" content="" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -24,31 +22,31 @@
     <div class="topbar-inner">
       <a class="brand" href="#" aria-label="Araplac Móveis - Início">
         <img src="img/logo.png" alt="Araplac Móveis" class="logo-transparent" />
-        <div class="brand-text">
-          <span class="brand-title">Araplac Móveis</span>
-          <span class="brand-sub">Almoxarifado de Manutenção</span>
-        </div>
+        <div class="brand-text"></div>
       </a>
 
-      <!-- Menu de usuário estilo Teams -->
+      <!-- Menu de usuário (CSS-only via <details>) -->
       <div class="profile-area">
-        <button id="profileBtn"
-                class="avatar-btn"
-                aria-haspopup="menu"
-                aria-expanded="false"
-                aria-controls="userMenu"
-                title="Conta">
-          <!-- Se tiver foto, troque por <img class="avatar" src="URL-DA-FOTO" alt="Seu perfil"> -->
-          <span class="avatar" aria-hidden="true">MF</span>
-        </button>
+        <details class="profile" role="list">
+          <summary class="avatar-btn" aria-label="Abrir menu da conta">
+            <span class="avatar" aria-hidden="true">M</span>
+          </summary>
 
-        <div id="userMenu" class="menu" role="menu" hidden>
-          <div class="menu-header">
-            <strong id="userName">Matheus</strong>
-            <small id="userEmail">usuario@empresa.com</small>
-          </div>
-          <button role="menuitem" id="logoutBtn" class="menu-item">Sair</button>
-        </div>
+          <nav class="menu" role="menu" aria-label="Menu do usuário">
+            <div class="menu-header">
+              <strong id="userName">Matheus</strong>
+              <small id="userEmail">usuario@empresa.com</small>
+            </div>
+
+            <a href="#" class="menu-item">Meu perfil</a>
+            <a href="#" class="menu-item">Configurações</a>
+
+            <div class="menu-section">Ajuda</div>
+            <a href="#" class="menu-item">Central de ajuda</a>
+
+            <button role="menuitem" id="logoutBtn" class="menu-item danger">Sair</button>
+          </nav>
+        </details>
       </div>
     </div>
   </header>
@@ -107,16 +105,20 @@
       <form id="formAdd" class="grid" autocomplete="off">
         <input name="codigo" placeholder="Código (ex: MT-0100)" required />
         <input name="descricao" placeholder="Descrição" required />
-        <input name="categoria" placeholder="Categoria" required />
+        <select name="categoria" required>
+          <option value="" selected disabled>Categoria</option>
+          <option value="MATERIA_PRIMA">Matéria-prima</option>
+          <option value="FERRAGEM">Ferragem</option>
+          <option value="ACABAMENTO">Acabamento</option>
+          <option value="CONSUMIVEIS">Consumíveis</option>
+          <option value="EMBALAGENS">Embalagens</option>
+          <option value="EPI">EPI</option>
+        </select>
         <input name="unidade" placeholder="Unidade (un, par, m²...)" required />
         <input name="quantidade" type="number" min="0" placeholder="Quantidade" required />
         <input name="localizacao" placeholder="Localização" required />
-        <select name="status" required>
-          <option value="OK">OK</option>
-          <option value="Baixo">Baixo</option>
-          <option value="Crítico">Crítico</option>
-        </select>
         <input name="ultimaMov" type="date" required />
+        <input name="responsavelRecebimento" type="text" placeholder="Responsável pelo recebimento" required>
         <div class="modal-actions">
           <button type="button" class="btn" data-close>Cancelar</button>
           <button class="btn btn-primary" type="submit">Salvar</button>
@@ -136,21 +138,63 @@
         <input type="hidden" name="id" />
         <input name="codigo" placeholder="Código" required />
         <input name="descricao" placeholder="Descrição" required />
-        <input name="categoria" placeholder="Categoria" required />
+        <select name="categoria" required>
+          <option value="" selected disabled>Categoria</option>
+          <option value="MATERIA_PRIMA">Matéria-prima</option>
+          <option value="FERRAGEM">Ferragem</option>
+          <option value="ACABAMENTO">Acabamento</option>
+          <option value="CONSUMIVEIS">Consumíveis</option>
+          <option value="EMBALAGENS">Embalagens</option>
+          <option value="EPI">EPI</option>
+        </select>
         <input name="unidade" placeholder="Unidade" required />
         <input name="quantidade" type="number" min="0" placeholder="Quantidade" required />
         <input name="localizacao" placeholder="Localização" required />
-        <select name="status" required>
-          <option value="OK">OK</option>
-          <option value="Baixo">Baixo</option>
-          <option value="Crítico">Crítico</option>
-        </select>
         <input name="ultimaMov" type="date" required />
+        <input name="responsavelRecebimento" placeholder="Responsável pelo recebimento" />
         <div class="modal-actions">
           <button type="button" class="btn" data-close>Cancelar</button>
           <button class="btn btn-primary" type="submit">Atualizar</button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- ===== Modal: Ver Detalhes ===== -->
+  <div class="modal" id="viewModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="viewTitle">
+    <div class="modal-card modal-card-lg">
+      <header class="modal-header">
+        <div class="view-head">
+          <div class="vh-icon" aria-hidden="true">📦</div>
+          <div>
+            <h3 id="viewTitle">Detalhes do produto</h3>
+            <div class="vh-sub">
+              <span id="vhCodigo" class="muted"></span>
+            </div>
+          </div>
+        </div>
+        <button class="icon-btn" data-close aria-label="Fechar">×</button>
+      </header>
+
+      <div class="vh-meta">
+        <span id="vhStatus" class="pill">Status</span>
+        <span id="vhUnidade" class="pill">Unidade</span>
+      </div>
+
+      <dl class="props">
+        <dt>Código</dt>              <dd id="vCodigo"></dd>
+        <dt>Descrição</dt>           <dd id="vDescricao"></dd>
+        <dt>Categoria</dt>           <dd id="vCategoria"></dd>
+        <dt>Unidade</dt>             <dd id="vUnidade"></dd>
+        <dt>Quantidade</dt>          <dd id="vQuantidade"></dd>
+        <dt>Localização</dt>         <dd id="vLocalizacao"></dd>
+        <dt>Última Movimentação</dt> <dd id="vUltimaMov"></dd>
+        <dt>Responsável</dt>         <dd id="vResp"></dd>
+      </dl>
+
+      <div class="modal-actions end">
+        <button class="btn" data-close>Fechar</button>
+      </div>
     </div>
   </div>
 
