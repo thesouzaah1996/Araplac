@@ -12,13 +12,25 @@ import com.araplac.backend.repository.ItemRepository;
 public class ItemService {
     
     @Autowired
-    private ItemRepository itemService;
+    private ItemRepository itemRepository;
 
     public Item addItem(Item item) {
-        return itemService.save(item);
+        return itemRepository.save(item);
     }
 
     public List<Item> mostrarItens() {
-        return itemService.findAll();
+        return itemRepository.findAll();
+    }
+
+    public List<Item> addVariosItens(List<Item> itens) {
+        return itemRepository.saveAll(itens);
+    }
+
+    public boolean removerItem(Long id) {
+        if (itemRepository.existsById(id)) {
+            itemRepository.deleteById(id);
+            return true;
+        }
+        return false;
     }
 }
