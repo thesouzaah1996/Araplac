@@ -1,6 +1,9 @@
 package com.araplac.backend.service;
 
 import java.util.List;
+import java.util.Optional;
+
+import javax.naming.NameNotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,5 +35,30 @@ public class ItemService {
             return true;
         }
         return false;
+    }
+
+    public Item editarItem(Long id, Item itemAtualizado) {
+        Optional<Item> itemExistenteOpt = itemRepository.findById(id);
+
+        if (itemExistenteOpt.isEmpty()) {
+            throw new IllegalArgumentException("Item com id: " + id + " não encontrado");
+        }
+
+        Item itemExistente = itemExistenteOpt.get();
+
+        itemExistente.setCodigoProduto(itemAtualizado.getCodigoProduto());
+        itemExistente.setDescricao(itemAtualizado.getDescricao());
+        itemExistente.setCategoria(itemAtualizado.getCategoria());
+        itemExistente.setUnidade(itemAtualizado.getUnidade());
+        itemExistente.setQuantidade(itemAtualizado.getQuantidade());
+        itemExistente.setLocalizacaoPrateleira(itemAtualizado.getLocalizacaoPrateleira());
+        itemExistente.setData(itemAtualizado.getData());
+        itemExistente.setResponsávelRecebimento(itemAtualizado.getResponsávelRecebimento());
+
+        return itemRepository.save(itemExistente);
+    }
+
+    public Optional<Item> buscarPorCodigo(String codigoProduto) {
+        return itemRepository.findByCodigoProduto(codigoProduto);
     }
 }

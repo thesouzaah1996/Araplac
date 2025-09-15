@@ -19,6 +19,10 @@
   <script src="login.js" defer></script>
 </head>
 <body>
+  <!-- ===== Top loader + aviso ===== -->
+  <div id="topProgress" class="top-progress" aria-hidden="true"></div>
+  <div id="topNotice" class="top-notice" role="status" aria-live="polite" hidden> </div>
+
   <!-- ===== Fundo com ondas ===== -->
   <div class="bg" aria-hidden="true">
     <!-- Ondas Topo -->
@@ -41,13 +45,12 @@
   <!-- ===== Conteúdo ===== -->
   <main class="page" role="main">
     <section class="card" aria-labelledby="loginTitle">
-      <header class="brand">
-      </header>
-      <img src="img/texto.png" alt="">
+      <header class="brand"></header>
+      <img src="img/texto.png" alt="Araplac Móveis">
 
       <form id="loginForm" novalidate>
         <div class="field">
-          <label for="email">Usuário</label>
+          <label for="username">Usuário</label>
           <input id="username" name="username" type="text"
                  inputmode="email" autocomplete="username"
                  autocapitalize="off" spellcheck="false"

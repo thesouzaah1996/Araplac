@@ -46,13 +46,12 @@ async function request(url, { method = "GET", body, headers = {}, timeoutMs = 12
     signal: controller.signal
   }).finally(() => clearTimeout(to));
 
-  if (res.status === 401 || res.status === 419){
-    throw new Error("Sessão inválida ou expirada.");
-  }
   if (!res.ok){
     let msg = res.statusText;
     try { msg = (await res.json())?.message || msg; } catch(_) {}
-    throw new Error(`${res.status} ${msg}`);
+    const err = new Error(`${msg || "Erro"}`);
+    err.status = res.status;
+    throw err;
   }
   const ct = res.headers.get("Content-Type") || "";
   return ct.includes("application/json") ? res.json() : res.text();
@@ -61,7 +60,7 @@ async function request(url, { method = "GET", body, headers = {}, timeoutMs = 12
 /* ===========================
    Validação / sanitização
    =========================== */
-function sanitizeEmail(v){ return String(v ?? "").trim(); }
+function sanitizeUsername(v){ return String(v ?? "").trim(); }
 function sanitizePassword(v){ return String(v ?? ""); }
 function assertLogin({username,password}){
   if (!username) throw new Error("Informe seu e-mail.");
@@ -72,7 +71,7 @@ function assertLogin({username,password}){
    DOM
    =========================== */
 const form = document.getElementById("loginForm");
-const email = document.getElementById("email");
+const username = document.getElementById("username");
 const password = document.getElementById("password");
 const togglePwd = document.getElementById("togglePwd");
 const submitBtn = document.getElementById("submitBtn");
@@ -80,27 +79,41 @@ const formMsg = document.getElementById("formMsg");
 const emailErr = document.getElementById("emailErr");
 const passErr  = document.getElementById("passwordErr");
 
+const topProgress = document.getElementById("topProgress");
+const topNotice = document.getElementById("topNotice");
+
+/* Helpers visuais topo */
+function startTopProgress(){ topProgress?.classList.add("active"); }
+function stopTopProgress(){ topProgress?.classList.remove("active"); }
+function showTopNotice(message, type = "info", timeout = 3000){
+  if (!topNotice) return;
+  topNotice.textContent = message;
+  topNotice.classList.remove("error","success","info");
+  if (type) topNotice.classList.add(type);
+  topNotice.hidden = false;
+  requestAnimationFrame(() => topNotice.classList.add("show"));
+  if (timeout > 0){
+    setTimeout(() => {
+      topNotice.classList.remove("show");
+      setTimeout(() => { topNotice.hidden = true; }, 250);
+    }, timeout);
+  }
+}
+
 /* Mostrar/ocultar senha acessível */
-togglePwd.addEventListener("click", () => {
+togglePwd?.addEventListener("click", () => {
   const shown = password.type === "text";
   password.type = shown ? "password" : "text";
   togglePwd.setAttribute("aria-pressed", String(!shown));
   password.focus();
 });
 
-/* Link recuperar senha (opcional, caso use endpoint) */
-// const resetLink = document.getElementById("resetLink");
-// resetLink.addEventListener("click", async (e) => {
-//   e.preventDefault();
-//   const username = sanitizeEmail(email.value);
-//   if (!username){ email.focus(); return; }
-//   try{
-//     await request(ENDPOINT.FORGOT(), { method:"POST", body:{ username } });
-//     alert("Se o e-mail existir, enviaremos instruções de redefinição.");
-//   }catch(err){
-//     alert("Não foi possível iniciar a recuperação de senha.");
-//   }
-// });
+/* Remover estados ao digitar */
+function clearFieldState(input){
+  input.classList.remove("is-valid","is-invalid");
+}
+username.addEventListener("input", () => clearFieldState(username));
+password.addEventListener("input", () => clearFieldState(password));
 
 /* Submit */
 form.addEventListener("submit", async (e) => {
@@ -108,25 +121,61 @@ form.addEventListener("submit", async (e) => {
   clearErrors();
   setLoading(true);
 
-  const payload = {
-    username: sanitizeEmail(email.value),
-    password: sanitizePassword(password.value),
-    remember: document.getElementById("remember").checked
-  };
+  // sanitiza
+  const user = sanitizeUsername(username.value);
+  const pass = sanitizePassword(password.value);
 
+  // valida (lado do cliente)
   try{
-    assertLogin(payload);
-    // O backend deve autenticar e setar cookie httpOnly de sessão
-    await request(ENDPOINT.LOGIN(), { method:"POST", body: payload });
-    formMsg.classList.remove("error");
-    formMsg.textContent = "Login efetuado. Redirecionando...";
-    window.location.href = "/"; // ajuste sua rota pós-login
+    assertLogin({ username: user, password: pass });
   }catch(err){
     formMsg.classList.add("error");
-    formMsg.textContent = err.message || "Falha no login.";
-    if (!payload.username){ showFieldError(email, emailErr, "Informe seu e-mail."); }
-    if (!payload.password){ showFieldError(password, passErr, "Informe sua senha."); }
+    formMsg.textContent = err.message;
+    if (!user){ showFieldError(username, emailErr, "Informe seu e-mail."); }
+    if (!pass){ showFieldError(password, passErr, "Informe sua senha."); }
+    setLoading(false);
+    return;
+  }
+
+  try{
+    startTopProgress();
+
+    // >>> Backend ESPERA { usuario, senha }
+    await request(ENDPOINT.LOGIN(), {
+      method:"POST",
+      body: { usuario: user, senha: pass } // sem "remember" para não arriscar desconhecido
+    });
+
+    // sucesso → bordas verdes + redirect
+    username.classList.remove("is-invalid"); password.classList.remove("is-invalid");
+    username.classList.add("is-valid");      password.classList.add("is-valid");
+
+    formMsg.classList.remove("error");
+    formMsg.textContent = "Login efetuado. Redirecionando...";
+    showTopNotice("Login realizado com sucesso!", "success", 1200);
+
+    window.location.href = "almoxarifado_manutencao.html";
+  }catch(err){
+    // erro → bordas vermelhas + aviso no topo
+    username.classList.remove("is-valid"); password.classList.remove("is-valid");
+    username.classList.add("is-invalid");   password.classList.add("is-invalid");
+
+    formMsg.classList.add("error");
+    if (err.status === 401){
+      formMsg.textContent = "Usuário ou senha incorreta.";
+      showTopNotice("Ops, usuário ou senha incorreta.", "error", 3500);
+    }else if (err.name === "AbortError"){
+      formMsg.textContent = "Tempo de conexão esgotado. Tente novamente.";
+      showTopNotice("Tempo esgotado. Verifique sua conexão.", "error", 3500);
+    }else{
+      formMsg.textContent = err.message || "Falha no login.";
+      showTopNotice("Não foi possível autenticar. Tente novamente.", "error", 3500);
+    }
+
+    if (!user){ showFieldError(username, emailErr, "Informe seu e-mail."); }
+    if (!pass){ showFieldError(password, passErr, "Informe sua senha."); }
   }finally{
+    stopTopProgress();
     setLoading(false);
   }
 });
@@ -139,12 +188,15 @@ function setLoading(state){
 function clearErrors(){
   formMsg.classList.remove("error");
   formMsg.textContent = "";
-  hideFieldError(email, emailErr);
+  hideFieldError(username, emailErr);
   hideFieldError(password, passErr);
+  clearFieldState(username);
+  clearFieldState(password);
 }
 function showFieldError(input, help, msg){
   input.setAttribute("aria-invalid", "true");
   help.hidden = false; help.textContent = msg;
+  input.classList.add("is-invalid");
 }
 function hideFieldError(input, help){
   input.removeAttribute("aria-invalid");
@@ -155,3 +207,18 @@ function hideFieldError(input, help){
 password.addEventListener("keydown", (e) => {
   if (e.key === "Enter") form.requestSubmit();
 });
+
+/* (Opcional) Recuperação de senha
+const resetLink = document.getElementById("resetLink");
+resetLink.addEventListener("click", async (e) => {
+  e.preventDefault();
+  const user = sanitizeUsername(username.value);
+  if (!user){ username.focus(); return; }
+  try{
+    await request(ENDPOINT.FORGOT(), { method:"POST", body:{ username: user } });
+    alert("Se o e-mail existir, enviaremos instruções de redefinição.");
+  }catch(_){
+    alert("Não foi possível iniciar a recuperação de senha.");
+  }
+});
+*/

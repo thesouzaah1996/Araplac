@@ -7,8 +7,16 @@ const ENDPOINT = {
   LIST: () => `${API_BASE}/api/itens`,
   CREATE: () => `${API_BASE}/api/itens/salvar`,
   CREATE_MORE: () => `${API_BASE}/api/itens/salvar-varios-itens`,
-  UPDATE: (id) => `${API_BASE}/api/itens/${encodeURIComponent(id)}`,
+  UPDATE: (id) => `${API_BASE}/api/itens/editar/${encodeURIComponent(id)}`,
   DELETE: (id) => `${API_BASE}/api/itens/remover/${encodeURIComponent(id)}`,
+
+  // 🔎 Busca por código (prefixo) — ajuste no backend para retornar LISTA
+  SEARCH_PREFIX: (q) => `${API_BASE}/api/itens/buscar?codigo=${encodeURIComponent(q)}`,
+  // 🔎 Busca por código (exato) — compatível com o seu @GetMapping("/codigo/{codigoProduto}")
+  SEARCH_EXACT: (q) => `${API_BASE}/api/itens/codigo/${encodeURIComponent(q)}`,
+
+  // 🚪 Logout
+  LOGOUT: () => `${API_BASE}/api/auth/logout`,
 };
 
 const tbody = document.getElementById("tbody");
@@ -17,11 +25,13 @@ const formEdit = document.getElementById("formEdit");
 const delItemEl = document.getElementById("delItem");
 const pager = document.getElementById("pagination");
 const film = document.getElementById("filmOverlay");
+const searchInput = document.getElementById("searchInput"); // ⬅️ campo de busca
 let filmTimer = null, filmAlpha = 0;
 
 let currentDeleteId = null;
 let itemsIndex = new Map();
 let itemsAll = [];
+let itemsView = []; // 👀 lista atualmente exibida (todos ou filtrados)
 const PAGE_SIZE = 8;
 let currentPage = 1;
 
@@ -102,6 +112,11 @@ function escapeHtml(s) {
     .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
 }
+const debounce = (fn, ms = 250) => {
+  let t;
+  return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), ms); };
+};
+const norm = (s) => String(s ?? "").trim().toUpperCase();
 
 /* ---------- Render + paginação ---------- */
 function rowTemplate(item) {
@@ -126,7 +141,7 @@ function rowTemplate(item) {
 function render(items) {
   tbody.innerHTML = items.map(rowTemplate).join("");
   itemsIndex.clear();
-  for (const it of itemsAll) itemsIndex.set(String(it.id ?? it.codigo), it);
+  for (const it of items) itemsIndex.set(String(it.id ?? it.codigo), it); // index da VIEW atual
 }
 function slicePage(list, page) {
   const start = (page - 1) * PAGE_SIZE;
@@ -145,20 +160,29 @@ if (pager) {
   pager.addEventListener("click", (e) => {
     const b = e.target.closest(".page-btn");
     if (!b) return;
-    const maxPage = Math.max(1, Math.ceil(itemsAll.length / PAGE_SIZE));
+    const maxPage = Math.max(1, Math.ceil(itemsView.length / PAGE_SIZE));
     const v = b.getAttribute("data-page");
     if (v === "prev") currentPage = Math.max(1, currentPage - 1);
     else if (v === "next") currentPage = Math.min(maxPage, currentPage + 1);
     else currentPage = Number(v) || 1;
-    render(slicePage(itemsAll, currentPage));
+    render(slicePage(itemsView, currentPage));
     renderPagination(maxPage);
   });
 }
 function renderPage(page = 1) {
-  const maxPage = Math.max(1, Math.ceil(itemsAll.length / PAGE_SIZE));
+  const maxPage = Math.max(1, Math.ceil(itemsView.length / PAGE_SIZE));
   currentPage = Math.min(Math.max(1, page), maxPage);
-  render(slicePage(itemsAll, currentPage));
+  render(slicePage(itemsView, currentPage));
   renderPagination(maxPage);
+}
+function refreshView(keepPage = false) {
+  const q = norm(searchInput?.value || "");
+  if (q) {
+    itemsView = itemsAll.filter(it => norm(it.codigo).startsWith(q)); // filtro instantâneo local
+  } else {
+    itemsView = itemsAll.slice();
+  }
+  renderPage(keepPage ? currentPage : 1);
 }
 
 /* ---------- Load ---------- */
@@ -168,13 +192,64 @@ async function loadItems() {
     if (!res.ok) throw new Error(`Falha ao carregar (${res.status})`);
     const json = await res.json();
     itemsAll = (Array.isArray(json) ? json : []).map(fromBackend);
+    itemsView = itemsAll.slice();
     renderPage(1);
   } catch (err) {
     console.warn("Erro ao carregar itens:", err.message);
     itemsAll = [];
+    itemsView = [];
     renderPage(1);
   }
 }
+
+/* ---------- Busca por código (UX: filtra na 1ª letra + consulta backend) ---------- */
+async function serverSearchByCode(q) {
+  const query = norm(q);
+  if (!query) return;
+
+  // 1) tenta endpoint de prefixo (lista)
+  try {
+    const res = await fetch(ENDPOINT.SEARCH_PREFIX(query));
+    if (res.ok) {
+      const data = await res.json();
+      const list = Array.isArray(data) ? data : (data ? [data] : []);
+      const mapped = list.map(fromBackend);
+      // Se o backend já filtrou, usa o retorno dele:
+      itemsView = mapped;
+      renderPage(1);
+      return;
+    }
+  } catch { /* silencioso */ }
+
+  // 2) fallback: tenta exato /codigo/{codigoProduto}
+  try {
+    const res2 = await fetch(ENDPOINT.SEARCH_EXACT(query));
+    if (res2.ok) {
+      const obj = await res2.json();
+      const one = fromBackend(obj);
+      itemsView = [one];
+      renderPage(1);
+      return;
+    }
+  } catch { /* silencioso */ }
+
+  // 3) nada encontrado no backend → mantém filtro local
+  refreshView();
+}
+const debouncedServerSearch = debounce(serverSearchByCode, 250);
+
+// liga o comportamento no input
+searchInput?.addEventListener("input", (e) => {
+  const q = e.target.value || "";
+  refreshView(false);          // feedback instantâneo (local)
+  debouncedServerSearch(q);    // busca no backend (prefixo/exato)
+});
+searchInput?.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    serverSearchByCode(e.currentTarget.value || "");
+  }
+});
 
 /* ---------- Add ---------- */
 formAdd?.addEventListener("submit", async (e) => {
@@ -193,7 +268,7 @@ formAdd?.addEventListener("submit", async (e) => {
     }
     const created = fromBackend(await res.json());
     itemsAll.unshift(created);
-    renderPage(1);
+    refreshView(false); // reavalia a view conforme a busca atual
     formAdd.reset();
     closeModals();
   } catch (err) {
@@ -267,7 +342,7 @@ formEdit?.addEventListener("submit", async (e) => {
     const idx = itemsAll.findIndex(it => String(it.id ?? it.codigo) === String(id));
     if (idx >= 0) itemsAll[idx] = updated;
 
-    renderPage(currentPage);
+    refreshView(true); // mantém a página atual ao atualizar
     closeModals();
   } catch (err) {
     console.error(err);
@@ -284,7 +359,7 @@ document.getElementById("confirmDelete").addEventListener("click", async (e) => 
     if (!res.ok) throw new Error(`Falha ao excluir (${res.status})`);
     itemsAll = itemsAll.filter(it => String(it.id ?? it.codigo) !== String(currentDeleteId));
     currentDeleteId = null;
-    renderPage(currentPage);
+    refreshView(true); // mantém a página ao remover
     closeModals();
   } catch (err) {
     console.error(err);
@@ -302,12 +377,39 @@ if (logoutBtn) {
   });
 }
 const confirmLogoutBtn = document.getElementById("confirmLogout");
+function goToLogin() {
+  window.location.href = "login.html";
+}
 if (confirmLogoutBtn) {
-  confirmLogoutBtn.addEventListener("click", (e) => {
+  confirmLogoutBtn.addEventListener("click", async (e) => {
     e.preventDefault();
-    stopFilm();
-    closeModals();
-    alert("Logout (exemplo).");
+    try {
+      const res = await fetch(ENDPOINT.LOGOUT(), {
+        method: "POST",
+        credentials: "include", // envia cookies/sessão se houver
+      });
+      // Limpa tokens locais caso use JWT no front
+      try { localStorage.removeItem("access_token"); } catch {}
+      try { sessionStorage.removeItem("access_token"); } catch {}
+
+      // Considera sucesso em 2xx/204 e também 401 (já deslogado)
+      if (res.ok || res.status === 204 || res.status === 200 || res.status === 401) {
+        closeModals();
+        stopFilm();
+        goToLogin();
+      } else {
+        closeModals();
+        stopFilm();
+        // fallback: ainda assim manda pra tela de login
+        goToLogin();
+      }
+    } catch (err) {
+      console.error("Erro no logout:", err);
+      closeModals();
+      stopFilm();
+      // fallback em erro de rede
+      goToLogin();
+    }
   });
 }
 function startFilm() {
@@ -334,7 +436,6 @@ document.addEventListener("click", (e) => {
   if (!d) return;
   if (!d.contains(e.target)) d.removeAttribute("open");
 });
-
 
 /* ---------- Init ---------- */
 loadItems();

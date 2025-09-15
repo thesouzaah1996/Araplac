@@ -55,11 +55,25 @@
     <section class="card" aria-labelledby="tbl-title">
       <header class="card-header">
         <div>
-          <h2 id="tbl-title">Controle de Itens</h2>
-          <p class="helper">Dados vêm do backend; esta UI só renderiza e envia ações com segurança.</p>
+          <h2 id="tbl-title">Controle de Estoque</h2>
         </div>
+
+        <!-- Toolbar: botão + busca -->
         <div class="toolbar">
           <button class="btn btn-primary" data-open="addModal" id="btnAdd">+ Adicionar item</button>
+
+          <!-- NOVO: input de busca (somente UI, sem lógica de backend aqui) -->
+          <form class="search-form" role="search" onsubmit="return false">
+            <input
+              id="searchInput"
+              class="search-input"
+              type="search"
+              name="q"
+              placeholder="Buscar produtos..."
+              aria-label="Buscar produtos"
+              autocomplete="off"
+            />
+          </form>
         </div>
       </header>
 
