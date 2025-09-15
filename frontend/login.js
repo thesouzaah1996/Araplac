@@ -58,6 +58,11 @@ async function request(url, { method = "GET", body, headers = {}, timeoutMs = 12
 }
 
 /* ===========================
+   Helpers
+   =========================== */
+const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+
+/* ===========================
    Validação / sanitização
    =========================== */
 function sanitizeUsername(v){ return String(v ?? "").trim(); }
@@ -146,13 +151,21 @@ form.addEventListener("submit", async (e) => {
       body: { usuario: user, senha: pass } // sem "remember" para não arriscar desconhecido
     });
 
-    // sucesso → bordas verdes + redirect
+    // sucesso → bordas verdes + mensagem e só depois redirect
     username.classList.remove("is-invalid"); password.classList.remove("is-invalid");
     username.classList.add("is-valid");      password.classList.add("is-valid");
 
     formMsg.classList.remove("error");
-    formMsg.textContent = "Login efetuado. Redirecionando...";
-    showTopNotice("Login realizado com sucesso!", "success", 1200);
+    formMsg.textContent = "Login efetuado com sucesso! Redirecionando...";
+
+    // Mostra aviso no topo e aguarda um pouquinho para o usuário ver
+    showTopNotice("Login realizado com sucesso!", "success", 1800);
+
+    // Desabilita campos para evitar novo envio enquanto mostramos a mensagem
+    Array.from(form.elements).forEach(el => { try { el.disabled = true; } catch(_) {} });
+
+    // Espera ~1.5s antes de redirecionar (ajuste se quiser mais/menos)
+    await sleep(1600);
 
     window.location.href = "almoxarifado_manutencao.html";
   }catch(err){
