@@ -1,7 +1,7 @@
 /* ===========================
    Config & Endpoints
    =========================== */
-const API_BASE = "http://localhost:8080"; // ajuste para seu backend
+const API_BASE = "http://localhost"; // backend via Nginx na porta 80
 const ENDPOINT = {
   LOGIN:  () => new URL("/api/auth/login",  API_BASE).toString(),  // POST
   LOGOUT: () => new URL("/api/auth/logout", API_BASE).toString(),  // POST

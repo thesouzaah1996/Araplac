@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Araplac Móveis • Almoxarifado de Manutenção</title>
 
-  <!-- Segurança -->
+  <!-- Segurança (CSP ajustada para backend no Nginx/porta 80) -->
   <meta http-equiv="Content-Security-Policy"
-        content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self'; connect-src 'self' http://localhost:8080 https://localhost:8080;">
+        content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self'; connect-src 'self' http://localhost http://127.0.0.1 http://localhost:8080 https://localhost:8080;">
   <meta name="referrer" content="no-referrer">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">

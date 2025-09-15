@@ -19,6 +19,9 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+// ⬇️ novo import para liberar estáticos
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
+
 import java.util.List;
 
 @Configuration
@@ -29,17 +32,30 @@ public class SecurityConfig {
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .cors(Customizer.withDefaults())
-            .csrf(csrf -> csrf.disable()) // habilite depois se quiser XSRF
+            .csrf(csrf -> csrf.disable())
             .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
             .authorizeHttpRequests(auth -> auth
+                // ⬇️ liberar recursos estáticos (classpath:/static, /public, etc.)
+                .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
+
+                // ⬇️ liberar raiz e index tanto para GET quanto HEAD (você testou com HEAD)
+                .requestMatchers(HttpMethod.GET,  "/", "/index.html").permitAll()
+                .requestMatchers(HttpMethod.HEAD, "/", "/index.html").permitAll()
+
+                // ⬇️ (opcional) endpoint público simples para teste
+                .requestMatchers("/ping").permitAll()
+
+                // preflight
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
+                // actuator básico
                 .requestMatchers("/actuator/health").permitAll()
 
                 // auth
                 .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
                 .requestMatchers("/api/auth/logout").permitAll()
 
-                // itens ainda públicos (ajuste quando quiser proteger)
+                // itens públicos (como você já deixou)
                 .requestMatchers("/api/itens/**").permitAll()
 
                 .anyRequest().authenticated()
@@ -72,16 +88,21 @@ public class SecurityConfig {
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration cfg = new CorsConfiguration();
         cfg.setAllowedOrigins(List.of(
+            // ⬇️ adicione as origens que vão bater no Nginx (porta 80)
+            "http://localhost",
+            "http://127.0.0.1",
+            // as que você já tinha:
             "http://localhost:5500",
             "http://127.0.0.1:5500",
             "http://localhost:8080",
             "http://127.0.0.1:8080"
         ));
-        cfg.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+        cfg.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"));
         cfg.setAllowedHeaders(List.of("*"));
         cfg.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        // se suas APIs ficam em /api/**, isso é suficiente; se precisar para outras rotas, troque para "/**"
         source.registerCorsConfiguration("/api/**", cfg);
         return source;
     }

@@ -2,3 +2,6 @@ Fazer a tabela e também utilizar o redis
 
 usuario: admin@admin
 senha: admin123('$2a$12$pEXEuJXYKEpW8sj.R5W76.MiKpAw0ELiXrSs4y7Zl91COjJWixAfy')
+
+Testar dockerizar no backend:
+try { Invoke-WebRequest http://localhost/ping } catch { $_.Exception.Response.StatusCode.value__ }

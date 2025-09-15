@@ -5,9 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Login • Araplac Móveis</title>
 
-  <!-- CSP básica: ajuste connect-src conforme o domínio do backend -->
+  <!-- CSP ajustada: inclui http://localhost e http://127.0.0.1 em connect-src -->
   <meta http-equiv="Content-Security-Policy"
-        content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self'; connect-src 'self' http://localhost:8080 https://localhost:8080;">
+        content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self'; connect-src 'self' http://localhost http://127.0.0.1 http://localhost:8080 https://localhost:8080;">
+
   <meta name="referrer" content="no-referrer" />
   <!-- Se seu back expõe CSRF via meta (além do cookie XSRF-TOKEN) -->
   <meta name="csrf-token" content="" />

@@ -2,7 +2,7 @@
    UI/JS - Almoxarifado
    ============================ */
 
-const API_BASE = "http://localhost:8080";
+const API_BASE = "http://localhost"; // backend via Nginx na porta 80
 const ENDPOINT = {
   LIST: () => `${API_BASE}/api/itens`,
   CREATE: () => `${API_BASE}/api/itens/salvar`,
@@ -10,9 +10,9 @@ const ENDPOINT = {
   UPDATE: (id) => `${API_BASE}/api/itens/editar/${encodeURIComponent(id)}`,
   DELETE: (id) => `${API_BASE}/api/itens/remover/${encodeURIComponent(id)}`,
 
-  // 🔎 Busca por código (prefixo) — ajuste no backend para retornar LISTA
+  // 🔎 Busca por código (prefixo)
   SEARCH_PREFIX: (q) => `${API_BASE}/api/itens/buscar?codigo=${encodeURIComponent(q)}`,
-  // 🔎 Busca por código (exato) — compatível com o seu @GetMapping("/codigo/{codigoProduto}")
+  // 🔎 Busca por código (exato)
   SEARCH_EXACT: (q) => `${API_BASE}/api/itens/codigo/${encodeURIComponent(q)}`,
 
   // 🚪 Logout
@@ -221,7 +221,7 @@ async function serverSearchByCode(q) {
     }
   } catch { /* silencioso */ }
 
-  // 2) fallback: tenta exato /codigo/{codigoProduto}
+  // 2) fallback: exato /codigo/{codigoProduto}
   try {
     const res2 = await fetch(ENDPOINT.SEARCH_EXACT(query));
     if (res2.ok) {
@@ -400,14 +400,12 @@ if (confirmLogoutBtn) {
       } else {
         closeModals();
         stopFilm();
-        // fallback: ainda assim manda pra tela de login
         goToLogin();
       }
     } catch (err) {
       console.error("Erro no logout:", err);
       closeModals();
       stopFilm();
-      // fallback em erro de rede
       goToLogin();
     }
   });
