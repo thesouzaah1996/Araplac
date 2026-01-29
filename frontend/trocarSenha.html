@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Trocar/Recuperar Senha • Araplac</title>
+
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self'; connect-src 'self' http://localhost:8080 https://localhost:8080;">
+  <meta name="referrer" content="no-referrer" />
+  <meta name="csrf-token" content="" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="trocarSenha.css" />
+  <script src="trocarSenha.js" defer></script>
+</head>
+<body>
+  <div class="bg" aria-hidden="true">
+    <svg class="wave wave-top wave-black" viewBox="0 0 1440 320" preserveAspectRatio="none">
+      <path d="M0,64L60,80C120,96,240,128,360,149.3C480,171,600,181,720,165.3C840,149,960,107,1080,112C1200,117,1320,171,1380,197.3L1440,224L1440,0L0,0Z" />
+    </svg>
+    <svg class="wave wave-top wave-red" viewBox="0 0 1440 320" preserveAspectRatio="none">
+      <path d="M0,192L80,165.3C160,139,320,85,480,96C640,107,800,181,960,202.7C1120,224,1280,192,1360,176L1440,160L1440,0L0,0Z" />
+    </svg>
+    <svg class="wave wave-bottom wave-black" viewBox="0 0 1440 320" preserveAspectRatio="none">
+      <path d="M0,256L60,245.3C120,235,240,213,360,181.3C480,149,600,107,720,106.7C840,107,960,149,1080,186.7C1200,224,1320,256,1380,272L1440,288L1440,320L0,320Z" />
+    </svg>
+    <svg class="wave wave-bottom wave-red" viewBox="0 0 1440 320" preserveAspectRatio="none">
+      <path d="M0,288L80,282.7C160,277,320,267,480,224C640,181,800,107,960,96C1120,85,1280,139,1360,165.3L1440,192L1440,320L0,320Z" />
+    </svg>
+  </div>
+
+  <main class="page" role="main">
+    <section class="card" aria-labelledby="title">
+      <header class="brand">
+        <img src="img/texto.png" alt="">
+      </header>
+
+      <form id="forgotForm" novalidate>
+        <div class="field">
+          <label for="email">E-mail</label>
+          <input id="email" name="email" type="email" inputmode="email" autocomplete="email"
+                 autocapitalize="off" spellcheck="false" required
+                 placeholder="seu.email@empresa.com" />
+          <small class="err" id="emailErr" hidden></small>
+        </div>
+
+        <div class="row between">
+          <a class="link" href="/login.html">Voltar ao login</a>
+        </div>
+
+        <button class="btn btn-primary full" id="sendBtn" type="submit">
+          <span class="btn-label">Enviar e-mail</span>
+          <span class="spinner" aria-hidden="true"></span>
+        </button>
+      </form>
+    </section>
+  </main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden>
+    <span class="spinner"></span>
+    <span id="toastMsg" class="msg">Enviando e-mail…</span>
+    <button id="toastClose" class="toast-close" aria-label="Fechar mensagem">×</button>
+  </div>
+
+  <footer class="app-footer" role="contentinfo">
+    <small>© 2025 Araplac Móveis</small>
+  </footer>
+</body>
+</html>
