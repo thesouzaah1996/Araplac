@@ -3,6 +3,7 @@ package com.araplac.login_araplac.users.controller;
 import com.araplac.login_araplac.response.Response;
 import com.araplac.login_araplac.users.dto.LoginRequest;
 import com.araplac.login_araplac.users.dto.LoginResponse;
+import com.araplac.login_araplac.users.dto.ResetPasswordRequest;
 import com.araplac.login_araplac.users.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -22,5 +23,15 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<Response<LoginResponse>> login(@RequestBody @Valid LoginRequest loginRequest) {
         return ResponseEntity.ok(authService.login(loginRequest));
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<Response<?>> forgotPassword(@RequestBody ResetPasswordRequest resetPasswordRequest) {
+        return ResponseEntity.ok(authService.forgetPassword(resetPasswordRequest.getEmail()));
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<Response<?>> resetPassword(@RequestBody ResetPasswordRequest resetPasswordRequest) {
+        return ResponseEntity.ok(authService.updatePasswordViaResetCode(resetPasswordRequest));
     }
 }

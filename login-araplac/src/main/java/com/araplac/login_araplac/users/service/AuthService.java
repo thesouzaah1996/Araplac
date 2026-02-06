@@ -4,14 +4,15 @@ import com.araplac.login_araplac.response.Response;
 import com.araplac.login_araplac.users.dto.LoginRequest;
 import com.araplac.login_araplac.users.dto.LoginResponse;
 import com.araplac.login_araplac.users.dto.RegistrationRequest;
+import com.araplac.login_araplac.users.dto.ResetPasswordRequest;
 
 public interface AuthService {
 
-    Response<String> register(RegistrationRequest request);
+//    Response<String> register(RegistrationRequest request);
 
     Response<LoginResponse> login(LoginRequest loginRequest);
 
-//    Response<?> forgetPassword(String email);
+    Response<?> forgetPassword(String email);
 //
-//    Response<?> updatePasswordViaResetCode(ResetPasswordRequest resetPasswordRequest);
+    Response<?> updatePasswordViaResetCode(ResetPasswordRequest resetPasswordRequest);
 }
