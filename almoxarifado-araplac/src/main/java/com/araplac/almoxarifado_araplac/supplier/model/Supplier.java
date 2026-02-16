@@ -24,4 +24,7 @@ public class Supplier {
 
     @NotBlank(message = "ContractInfo is required")
     private String contactInfo;
+
+    @NotBlank(message = "Address is required")
+    private String address;
 }
