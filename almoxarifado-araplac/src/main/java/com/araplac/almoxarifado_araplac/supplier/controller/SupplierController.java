@@ -1,4 +1,4 @@
-package com.araplac.almoxarifado_araplac.controller;
+package com.araplac.almoxarifado_araplac.supplier.controller;
 
 import com.araplac.almoxarifado_araplac.dto.Response;
 import com.araplac.almoxarifado_araplac.supplier.dto.SupplierDTO;

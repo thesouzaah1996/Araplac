@@ -1,5 +1,9 @@
 package com.araplac.almoxarifado_araplac.dto;
 
+import com.araplac.almoxarifado_araplac.category.dto.CategoryDTO;
+
+
+import com.araplac.almoxarifado_araplac.products.dto.ProductDTO;
 import com.araplac.almoxarifado_araplac.supplier.dto.SupplierDTO;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
@@ -20,16 +24,16 @@ public class Response {
     private String token;
 
     private SupplierDTO supplier;
-//
+
     private List<SupplierDTO> suppliers;
-//
-//    private CategoryDTO category;
-//
-//    private List<CategoryDTO> categories;
-//
-//    private ProductDTO product;
-//
-//    private List<ProductDTO> products;
+
+    private CategoryDTO category;
+
+    private List<CategoryDTO> categories;
+
+    private ProductDTO product;
+
+    private List<ProductDTO> products;
 
 //    private TransactionDTO transaction;
 //
