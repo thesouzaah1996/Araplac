@@ -1,0 +1,51 @@
+spring:
+  config:
+    import: optional:file:.env[.properties]
+
+  application:
+    name: login-araplac
+
+  datasource:
+    url: ${LOCAL_DB_URL}
+    username: ${LOCAL_DB_USERNAME}
+    password: ${LOCAL_DB_PASSWORD}
+
+  mail:
+    username: ${MAIL_USER}
+    password: ${MAIL_PASS}
+    host: smtp.gmail.com
+    port: 587
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+server:
+  port: ${PORT}
+
+jwt:
+  secret:
+    string: ${JWT_SECRET}
+  expiration:
+    time: ${JWT_EXPIRATION_TIME}
+
+login:
+  link: http://127.0.0.1:5500/login.html
+
+password:
+  reset:
+    link: http://127.0.0.1:5500/reset-senha.html
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+  instance:
+    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
