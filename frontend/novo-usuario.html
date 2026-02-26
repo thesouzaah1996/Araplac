@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Novo Usuário • Recursos Humanos • Araplac</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="./css/dashboard.css">
+    <link rel="stylesheet" href="./css/novo-usuario.css">
+</head>
+
+<body>
+
+    <header class="app-header">
+        <div class="container header-row">
+            <a href="dashboard.html" class="brand d-flex align-items-center gap-3">
+                <img src="./img/logo.png" alt="Araplac" class="brand-logo">
+            </a>
+
+            <div class="session ms-auto">
+                <div class="dropdown">
+                    <button class="btn-profile dropdown-toggle" type="button" id="profileDropdown"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        <div class="profile-avatar">
+                            <i class="bi bi-person-circle"></i>
+                        </div>
+                        <span>Usuário</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+                        <li>
+                            <a class="dropdown-item" href="#">
+                                <i class="bi bi-person me-2"></i>
+                                Meu Perfil
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="#">
+                                <i class="bi bi-gear me-2"></i>
+                                Configurações
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="#">
+                                <i class="bi bi-shield-check me-2"></i>
+                                Privacidade
+                            </a>
+                        </li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li>
+                            <button class="dropdown-item text-danger" type="button" data-bs-toggle="modal"
+                                data-bs-target="#logoutModal">
+                                <i class="bi bi-box-arrow-right me-2"></i>
+                                Sair
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="app-main">
+        <div class="container py-5">
+            <div class="form-container">
+                <div class="form-card">
+                    <form id="novoUsuarioForm" novalidate>
+                        <div class="mb-4">
+                            <label for="nome" class="form-label required">Nome Completo</label>
+                            <input type="text" class="form-control" id="nome" name="nome"
+                                placeholder="Digite o nome completo do usuário" required>
+                            <div class="error-message" id="nomeError">Nome é obrigatório</div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="email" class="form-label required">E-mail</label>
+                            <input type="email" class="form-control" id="email" name="email"
+                                placeholder="usuario@empresa.com" required>
+                            <div class="error-message" id="emailError">E-mail é obrigatório e deve ser válido</div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="senha" class="form-label required">Senha</label>
+                            <div class="position-relative">
+                                <input type="password" class="form-control" id="senha" name="senha"
+                                    placeholder="Digite uma senha segura" required minlength="6">
+                                <button type="button" class="password-toggle" id="toggleSenha">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                            </div>
+                            <small class="text-muted">Mínimo de 6 caracteres</small>
+                            <div class="error-message" id="senhaError">Senha é obrigatória</div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="confirmarSenha" class="form-label required">Confirmar Senha</label>
+                            <div class="position-relative">
+                                <input type="password" class="form-control" id="confirmarSenha" name="confirmarSenha"
+                                    placeholder="Digite a senha novamente" required>
+                                <button type="button" class="password-toggle" id="toggleConfirmarSenha">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                            </div>
+                            <div class="error-message" id="confirmarSenhaError">As senhas não coincidem</div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="roles" class="form-label">Cargos e Permissões</label>
+                            <select class="form-control" id="roles" name="roles">
+                                <option value="" selected disabled>Selecionar cargo</option>
+                                <option value="AUXILIAR">Auxiliar</option>
+                                <option value="ADMIN">Administrador (ADMIN)</option>
+                                <option value="RECURSOS_HUMANOS">Recursos Humanos</option>
+                                <option value="GERENTE">Gerente</option>
+                                <option value="ENCARREGADO">Supervisor</option>
+                                <option value="CONFERENTE">Conferente</option>
+                            </select>
+                            <small class="text-muted">Auxiliar será atribuído automaticamente se nenhum cargo for
+                                selecionado</small>
+                        </div>
+
+                        <div class="d-flex gap-3 mt-5">
+                            <button type="button" onclick="window.location.href='rh.html'" class="btn-cancel flex-fill">
+                                Cancelar
+                            </button>
+                            <button type="submit" class="btn-submit flex-fill" id="submitBtn">
+                                <span class="btn-label">Criar Usuário</span>
+                                <span class="spinner-border spinner-border-sm d-none" role="status"></span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="app-footer">
+        <div class="container text-center">
+            © 2025 Araplac Móveis — Recursos Humanos
+        </div>
+    </footer>
+
+    <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-0">
+                    <div class="modal-icon">
+                        <i class="bi bi-question-circle text-warning"></i>
+                    </div>
+                    <h5 class="modal-title ms-2" id="logoutModalLabel">Confirmar Saída</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body py-4">
+                    <p class="mb-0">Tem certeza que deseja sair do sistema?</p>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle me-2"></i>
+                        Cancelar
+                    </button>
+                    <button type="button" class="btn btn-danger" onclick="performLogout()">
+                        <i class="bi bi-box-arrow-right me-2"></i>
+                        Sair
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="./js/novo-usuario.js"></script>
+</body>
+
+</html>

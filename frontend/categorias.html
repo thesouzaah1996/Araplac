@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Categorias • Araplac</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="./css/dashboard.css">
+    <link rel="stylesheet" href="./css/categorias.css">
+</head>
+
+<body>
+
+<header class="app-header">
+    <div class="container header-row">
+        <a href="dashboard.html" class="brand d-flex align-items-center gap-3">
+            <img src="./img/logo.png" alt="Araplac" class="brand-logo">
+        </a>
+
+                    <div class="session ms-auto">
+                <div class="dropdown">
+                    <button class="btn-profile dropdown-toggle" type="button" id="profileDropdown"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        <div class="profile-avatar">
+                            <i class="bi bi-person-circle"></i>
+                        </div>
+                        <span>Usuário</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+                        <li>
+                            <a class="dropdown-item" href="#">
+                                <i class="bi bi-person me-2"></i>
+                                Meu Perfil
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="#">
+                                <i class="bi bi-gear me-2"></i>
+                                Configurações
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="#">
+                                <i class="bi bi-shield-check me-2"></i>
+                                Privacidade
+                            </a>
+                        </li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li>
+                            <button class="dropdown-item text-danger" type="button" data-bs-toggle="modal"
+                                data-bs-target="#logoutModal">
+                                <i class="bi bi-box-arrow-right me-2"></i>
+                                Sair
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+    </div>
+</header>
+
+<main class="app-main">
+    <div class="container py-5">
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="fw-bold">Gerenciar Categorias</h3>
+            <button class="btn btn-danger" onclick="openAddModal()">
+                <i class="bi bi-plus-circle me-2"></i>
+                Nova Categoria
+            </button>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-body">
+
+                <table class="table table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nome</th>
+                            <th class="text-end">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="categoryTable"></tbody>
+                </table>
+
+                <div id="paginationContainer" class="pagination-container">
+                    <div id="paginationInfo" class="pagination-info"></div>
+                    <nav>
+                        <ul class="pagination" id="pagination"></ul>
+                    </nav>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</main>
+
+<div class="modal fade" id="categoryModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title fw-bold" id="modalTitle"></h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <form id="categoryForm">
+                    <input type="hidden" id="categoryId">
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">
+                            <i class="bi bi-tag me-1 text-danger"></i>
+                            Nome
+                        </label>
+                        <input type="text" class="form-control" id="name" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer border-0 bg-light">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                    Cancelar
+                </button>
+                <button type="button" class="btn btn-danger" onclick="saveCategory()">
+                    Salvar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title fw-bold">Confirmar Exclusão</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center">
+                <h5>Deseja excluir a categoria?</h5>
+                <p>
+                    <strong class="text-danger" id="deleteCategoryName"></strong>
+                </p>
+            </div>
+            <div class="modal-footer bg-light border-0">
+                <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button class="btn btn-danger" onclick="confirmDelete()">Excluir</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer class="app-footer">
+    <div class="container text-center">
+        © 2025 Araplac Móveis — Almoxarifado
+    </div>
+</footer>
+
+<div id="alertContainer"></div>
+
+<script src="./js/categorias.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

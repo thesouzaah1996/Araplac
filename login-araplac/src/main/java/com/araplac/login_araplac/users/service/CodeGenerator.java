@@ -13,7 +13,7 @@ public class CodeGenerator {
 
     private static final String ALPHA_NUMERIC = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
-    private static final int CODE_LENGTH = 5;
+    private static final int CODE_LENGTH = 6;
 
     public String generateUniqueCode() {
         String code;

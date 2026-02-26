@@ -1,0 +1,230 @@
+:root{
+  --brand-900:#7d0000;
+  --brand-700:#b60000;
+  --brand-600:#d01919;
+
+  --ink:#0b1020;
+  --muted:#5f6b7a;
+  --bg:#f5f6f8;
+  --surface:#ffffff;
+}
+
+body{
+  font-family:'Segoe UI', system-ui, sans-serif;
+  background: #ffffff;
+  padding-top:72px;
+  padding-bottom:56px;
+}
+
+.app-header{
+  position:fixed;
+  top:0; left:0; right:0;
+  background:#0c0c0c;
+  border-bottom:1px solid rgba(255,255,255,.1);
+  z-index: 1000;
+}
+.header-row{
+  height:64px;
+  display:flex;
+  align-items:center;
+}
+.brand-logo{
+  height:62px;
+  transition: transform 0.3s ease;
+}
+.brand-logo:hover {
+  transform: scale(1.05);
+}
+.brand-title{
+  font-weight:700;
+  color:#fff;
+}
+.brand-sub{
+  font-size:.8rem;
+  color:#cfcfcf;
+}
+
+.btn-profile{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  border:1px solid rgba(255,255,255,.2);
+  color:#fff;
+  background:transparent;
+  border-radius:14px;
+  padding:6px 14px;
+  transition: all 0.3s ease;
+}
+.btn-profile:hover{
+  background:rgba(255,255,255,.1);
+  border-color:rgba(255,255,255,.3);
+}
+.profile-avatar{
+  width:32px;
+  height:32px;
+  background:rgba(255,255,255,.1);
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:1.5rem;
+  color:#fff;
+}
+.dropdown-menu{
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,.1);
+  background:#1a1a1a;
+  box-shadow:0 8px 24px rgba(0,0,0,.3);
+  min-width:200px;
+}
+.dropdown-item{
+  color:#e0e0e0;
+  padding:10px 15px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  background: none;
+  border: none;
+  width: 100%;
+  text-align: left;
+}
+.dropdown-item:hover{
+  background:rgba(255,255,255,.1);
+  color:#fff;
+}
+.dropdown-item i{
+  width:20px;
+  text-align:center;
+}
+.dropdown-divider{
+  border-color:rgba(255,255,255,.1);
+}
+
+/* CARDS */
+.card-menu{
+  background:var(--surface);
+  border-radius:16px;
+  padding:26px;
+  text-align:center;
+  text-decoration:none;
+  color:var(--ink);
+  box-shadow:0 8px 24px rgba(0,0,0,.08);
+  transition:.2s;
+}
+.card-menu:hover{
+  transform:translateY(-4px);
+  box-shadow:0 16px 32px rgba(0,0,0,.16);
+}
+.icon-size{
+  font-size:2.8rem;
+  color:var(--brand-700);
+  margin-bottom:8px;
+}
+
+.app-footer{
+  position:fixed;
+  bottom:0; left:0; right:0;
+  height:56px;
+  background:#0c0c0c;
+  color:#cfcfcf;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:.9rem;
+}
+
+.app-footer .container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+/* Estilos do Modal */
+.modal-content {
+  border-radius: 16px;
+  border: none;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.modal-header {
+  padding: 1.5rem 1.5rem 0.5rem;
+}
+
+.modal-icon {
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 193, 7, 0.1);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+}
+
+.modal-icon .bi-question-circle {
+  color: #ffc107;
+}
+
+.modal-title {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.modal-body {
+  padding: 0 1.5rem;
+  color: var(--muted);
+  font-size: 1.1rem;
+}
+
+.modal-footer {
+  padding: 1rem 1.5rem 1.5rem;
+  gap: 10px;
+}
+
+.modal-footer .btn {
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 120px;
+}
+
+.modal-footer .btn-outline-secondary {
+  border-color: #dee2e6;
+  color: #6c757d;
+}
+
+.modal-footer .btn-outline-secondary:hover {
+  background-color: #f8f9fa;
+}
+
+.modal-footer .btn-danger {
+  background-color: var(--brand-700);
+  border-color: var(--brand-700);
+}
+
+.modal-footer .btn-danger:hover {
+  background-color: var(--brand-900);
+  border-color: var(--brand-900);
+}
+
+@media (max-width: 768px) {
+  .brand-logo {
+    height: 52px;
+  }
+  
+  .btn-profile span {
+    display: none;
+  }
+  
+  .btn-profile {
+    padding: 6px 10px;
+  }
+  
+  .modal-footer .btn {
+    min-width: 100px;
+    padding: 8px 16px;
+  }
+}

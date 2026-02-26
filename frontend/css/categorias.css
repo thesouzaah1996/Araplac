@@ -1,0 +1,147 @@
+        .modal-title {
+            color: white !important;
+        }
+
+        .modal-content {
+            border: none;
+            border-radius: 1rem;
+        }
+        .modal-header {
+            border-radius: 1rem 1rem 0 0;
+        }
+        .table td {
+            vertical-align: middle;
+        }
+        .action-buttons {
+            white-space: nowrap;
+        }
+        .alert-toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            min-width: 300px;
+            animation: slideIn 0.3s ease-in-out;
+        }
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        .warning-icon {
+            font-size: 4rem;
+            color: #dc3545;
+            opacity: 0.8;
+        }
+        .delete-warning {
+            background-color: #fff5f5;
+            border-left: 4px solid #dc3545;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+        }
+        .btn-action {
+            width: 36px;
+            height: 36px;
+            padding: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            margin: 0 2px;
+        }
+        .btn-action i {
+            font-size: 1.1rem;
+        }
+        .btn-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .btn-action-edit {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            color: #dc3545;
+        }
+        .btn-action-edit:hover {
+            background-color: #dc3545;
+            border-color: #dc3545;
+            color: white;
+        }
+        .btn-action-delete {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            color: #6c757d;
+        }
+        .btn-action-delete:hover {
+            background-color: #dc3545;
+            border-color: #dc3545;
+            color: white;
+        }
+        .badge-id {
+            background-color: #f8f9fa;
+            color: #dc3545;
+            font-weight: 600;
+            padding: 0.35rem 0.65rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+        }
+        .is-invalid {
+            border-color: #dc3545 !important;
+        }
+        .invalid-feedback {
+            display: block;
+            color: #dc3545;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+        
+        .pagination-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid #dee2e6;
+        }
+        
+        .pagination-info {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        .pagination {
+            margin-bottom: 0;
+            gap: 5px;
+        }
+        
+        .page-link {
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            color: #495057;
+            border: 1px solid #dee2e6;
+            transition: all 0.2s ease;
+        }
+        
+        .page-link:hover {
+            background-color: #dc3545;
+            border-color: #dc3545;
+            color: white;
+        }
+        
+        .page-item.active .page-link {
+            background-color: #dc3545;
+            border-color: #dc3545;
+            color: white;
+        }
+        
+        .page-item.disabled .page-link {
+            color: #adb5bd;
+            pointer-events: none;
+            background-color: #f8f9fa;
+        }

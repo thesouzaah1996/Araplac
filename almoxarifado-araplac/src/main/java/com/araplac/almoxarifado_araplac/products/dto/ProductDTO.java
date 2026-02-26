@@ -28,13 +28,7 @@ public class ProductDTO {
 
     private String sku;
 
-    private BigDecimal price;
-
     private Integer stockQuantity;
 
     private String description;
-
-    private LocalDateTime expiryDate;
-
-    private LocalDateTime createdAt;
 }

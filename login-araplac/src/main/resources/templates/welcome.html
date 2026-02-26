@@ -1,10 +1,249 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+    <meta charset="UTF-8">
+    <title>Acesso ao Sistema - Araplac Móveis</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background-color: #f5f6f8;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #FFFFFF;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+        }
+
+        .header {
+            background: linear-gradient(90deg, #7d0000, #b60000);
+            color: #FFFFFF;
+            text-align: center;
+            padding: 30px 20px;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .content {
+            padding: 40px;
+            line-height: 1.6;
+            color: #0b1020;
+        }
+
+        .content p {
+            margin-bottom: 20px;
+            font-size: 15px;
+        }
+
+        .credentials-box {
+            background-color: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 25px 0;
+            border: 1px solid #e6e8ef;
+        }
+
+        .credentials-box h3 {
+            color: #0b1020;
+            margin-top: 0;
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+
+        .credential-item {
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+
+        .credential-label {
+            color: #5f6b7a;
+            font-weight: 600;
+            display: inline-block;
+            width: 100px;
+        }
+
+        .credential-value {
+            color: #0b1020;
+            font-weight: 500;
+        }
+
+        .test-access {
+            background-color: #fff8f8;
+            border: 1px solid #ffdddd;
+            border-left: 4px solid #d01919;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 30px 0;
+        }
+
+        .test-access h4 {
+            color: #d01919;
+            margin-top: 0;
+            font-size: 15px;
+        }
+
+        .button-container {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 14px 30px;
+            background: #8a0000;
+            color: #FFFFFF;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .button:hover {
+            background: #a00000;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(125,0,0,0.4);
+        }
+
+        .support-info {
+            background-color: #f0f8ff;
+            border: 1px solid #e0eeff;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 25px 0;
+        }
+
+        .support-info h4 {
+            color: #1976D2;
+            margin-top: 0;
+            font-size: 15px;
+        }
+
+        .contact-item {
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .contact-label {
+            color: #5f6b7a;
+            font-weight: 600;
+            display: inline-block;
+            width: 120px;
+        }
+
+        .footer {
+            background-color: #f0f0f0;
+            color: #5f6b7a;
+            padding: 25px;
+            text-align: center;
+            font-size: 13px;
+            border-top: 1px solid #e6e8ef;
+        }
+
+        .logo-header {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .logo-header span {
+            font-size: 22px;
+            color: #FFFFFF;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .highlight {
+            color: #d01919;
+            font-weight: 700;
+        }
+    </style>
 </head>
 <body>
-$END$
+<div class="container">
+
+    <div class="header">
+        <div class="logo-header">
+            <span>ARAPLAC MÓVEIS</span>
+        </div>
+        <h1>Sistema Interno - Acesso Criado</h1>
+    </div>
+
+    <div class="content">
+        <div class="credentials-box">
+            <h3>📋 Credenciais de Acesso</h3>
+            <div class="credential-item">
+                <span class="credential-label">Usuário:</span>
+                <span class="credential-value" th:text="${email}">email@arplac.com.br</span>
+            </div>
+            <div class="credential-item">
+                <span class="credential-label">Senha:</span>
+                <span class="credential-value">******** (definida por você)</span>
+            </div>
+            <div class="credential-item">
+                <span class="credential-label">Sistema:</span>
+                <span class="credential-value">Portal RH - Gestão Interna</span>
+            </div>
+        </div>
+
+        <div class="test-access">
+            <h4>⚠️ Importante - Teste de Acesso</h4>
+            <p>Recomendamos que você realize o <strong>primeiro acesso imediatamente</strong> para:</p>
+            <ul style="margin-left: 20px; color: #5f6b7a; font-size: 14px;">
+                <li>Verificar se suas credenciais estão funcionando corretamente</li>
+                <li>Alterar sua senha temporária (se aplicável)</li>
+                <li>Validar suas permissões e acessos</li>
+                <li>Conferir se todos os módulos estão disponíveis conforme seu cargo</li>
+            </ul>
+        </div>
+
+        <div class="button-container">
+            <a th:href="${loginLink}" class="button" style="color: #FFFFFF; text-decoration: none;">Testar Acesso Agora</a>
+        </div>
+
+        <div class="support-info">
+            <h4>🛠️ Problemas com o Acesso?</h4>
+            <p>Se você encontrar qualquer problema durante o acesso ou precisar de suporte:</p>
+
+            <div class="contact-item">
+                <span class="contact-label">Suporte Técnico:</span>
+                <span>suporte@arplac.com.br</span>
+            </div>
+            <div class="contact-item">
+                <span class="contact-label">Telefone:</span>
+                <span>(XX) XXXX-XXXX (Ramal: 123)</span>
+            </div>
+            <div class="contact-item">
+                <span class="contact-label">Horário:</span>
+                <span>Segunda a Sexta, 8h às 18h</span>
+            </div>
+
+            <p style="margin-top: 15px; font-size: 14px; color: #666;">
+                <strong>Informe ao suporte:</strong> seu nome completo, cargo e o problema encontrado.
+            </p>
+        </div>
+
+        <p>Após confirmar que seu acesso está funcionando, você pode começar a utilizar todos os recursos do sistema conforme suas permissões.</p>
+
+        <p>Atenciosamente,<br>
+            <strong>Equipe de TI - Araplac Móveis</strong></p>
+    </div>
+
+    <div class="footer">
+        <p>© <span th:text="${#temporals.year(#temporals.createNow())}">2025</span> Araplac Móveis - Sistema Interno de Gestão</p>
+        <p>Este é um e-mail automático do sistema. Em caso de dúvidas, entre em contato com o suporte técnico.</p>
+    </div>
+
+</div>
 </body>
 </html>

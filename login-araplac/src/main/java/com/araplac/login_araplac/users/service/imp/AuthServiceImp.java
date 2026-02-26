@@ -6,9 +6,11 @@ import com.araplac.login_araplac.notification.dto.NotificationDTO;
 import com.araplac.login_araplac.notification.service.NotificationService;
 import com.araplac.login_araplac.response.Response;
 import com.araplac.login_araplac.roles.entity.Role;
+import com.araplac.login_araplac.roles.repo.RoleRepository;
 import com.araplac.login_araplac.security.JwtService;
 import com.araplac.login_araplac.users.dto.LoginRequest;
 import com.araplac.login_araplac.users.dto.LoginResponse;
+import com.araplac.login_araplac.users.dto.RegistrationRequest;
 import com.araplac.login_araplac.users.dto.ResetPasswordRequest;
 import com.araplac.login_araplac.users.entity.PasswordResetCode;
 import com.araplac.login_araplac.users.entity.User;
@@ -22,8 +24,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.management.relation.RoleResult;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -31,32 +36,58 @@ import java.util.Map;
 public class AuthServiceImp implements AuthService {
 
     private final UserRepository userRepo;
-//    private final RoleRe roleRepo;
+    private final RoleRepository roleRepo;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final NotificationService notificationService;
-//
-//    private final PatientRepo patientRepo;
-//    private final DoctorRepository doctorRepository;
-//
     private final CodeGenerator codeGenerator;
     private final PasswordResetRepo passwordResetRepo;
 
     @Value("${password.reset.link}")
     private String resetLink;
 
-//    @Override
-//    public Response<String> register(RegistrationRequest request) {
-//        if (userRepo.findByEmail(request.getEmail()).isPresent()) {
-//            throw new BadRequestException("User with email already exists.");
-//        }
-//
-//        List<String> requestRoleNames = (request.getRoles() != null && !request.getRoles().isEmpty())
-//                ? request.getRoles().stream().map(String::toUpperCase).toList()
-//                : List.of("PATIENT");
-//
-//        return null;
-//    }
+    @Value("${login.link}")
+    private String loginLink;
+
+
+    @Override
+    public Response<String> register(RegistrationRequest request) {
+        if (userRepo.findByEmail(request.getEmail()).isPresent()) {
+            throw new BadRequestException("User with email already exists.");
+        }
+
+        List<String> requestRoleNames = (request.getRoles() != null && !request.getRoles().isEmpty())
+                ? request.getRoles().stream().map(String::toUpperCase).toList()
+                : List.of("AUXILIAR");
+
+        List<Role> roles = requestRoleNames.stream()
+                .map(roleRepo::findByName)
+                .flatMap(Optional::stream)
+                .toList();
+
+        if (roles.isEmpty()) {
+            throw new NotFoundException("Registration failed: requested roles were not found in this database.");
+        }
+
+        User newUser = User.builder()
+                .email(request.getEmail())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .name(request.getName())
+                .roles(roles)
+                .build();
+
+        User savedUser = userRepo.save(newUser);
+
+        log.info("New user registrered");
+
+        sendRegistrationEmail(request, savedUser);
+
+        return Response.<String>builder()
+                .statusCode(200)
+                .message("Registration succesful. A welcome email has been sent to you.")
+                .data(savedUser.getEmail())
+                .build();
+    }
 
     @Override
     public Response<LoginResponse> login(LoginRequest loginRequest) {
@@ -105,11 +136,12 @@ public class AuthServiceImp implements AuthService {
 
         NotificationDTO passwordResetEmail = NotificationDTO.builder()
                 .recipient(user.getEmail())
-                .subject("Password reset code")
+                .subject("Código de redefinição de senha")
                 .templateName("password-reset")
                 .templateVariables(Map.of(
                         "name", user.getName(),
-                        "resetLink", resetLink + code
+                        "resetLink", resetLink,
+                        "code", code
                 ))
                 .build();
 
@@ -155,6 +187,21 @@ public class AuthServiceImp implements AuthService {
                 .statusCode(200)
                 .message("Password updated sucessfully")
                 .build();
+    }
+
+    private void sendRegistrationEmail(RegistrationRequest request, User user) {
+        NotificationDTO welcomeEmail = NotificationDTO.builder()
+                .recipient(user.getEmail())
+                .subject("Seu email foi criado com sucesso.")
+                .templateName("welcome")
+                .message("Por favor, faça os devidos testes ao logar no sistema, caso encontre algum erro, entre me contato com nosso time de suporte.")
+                .templateVariables(Map.of(
+                        "name", request.getName(),
+                        "loginLink", loginLink,
+                        "email", request.getEmail()
+                ))
+                .build();
+        notificationService.sendEmail(welcomeEmail, user);
     }
 
     private LocalDateTime calculateExpiryDate() {

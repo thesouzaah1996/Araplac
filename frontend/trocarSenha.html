@@ -6,15 +6,20 @@
   <title>Trocar/Recuperar Senha • Araplac</title>
 
   <meta http-equiv="Content-Security-Policy"
-        content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self'; connect-src 'self' http://localhost:8080 https://localhost:8080;">
-  <meta name="referrer" content="no-referrer" />
-  <meta name="csrf-token" content="" />
+        content="
+          default-src 'self';
+          img-src 'self' data:;
+          style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+          font-src https://fonts.gstatic.com;
+          script-src 'self' 'unsafe-inline';
+          connect-src http://localhost:8090;
+        ">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="trocarSenha.css" />
-  <script src="trocarSenha.js" defer></script>
+  <link rel="stylesheet" href="css/trocarSenha.css" />
+  <script src="js/trocarSenha.js" defer></script>
 </head>
 <body>
   <div class="bg" aria-hidden="true">

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Redefinir Senha • Araplac Móveis</title>
+
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; 
+                 img-src 'self' data:; 
+                 style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; 
+                 font-src https://fonts.gstatic.com; 
+                 script-src 'self' 'unsafe-inline' 'unsafe-eval'; 
+                 connect-src 'self' http://localhost:* https://localhost:* ws://localhost:* wss://localhost:* http://127.0.0.1:* https://127.0.0.1:*;">
+
+  <meta name="referrer" content="no-referrer" />
+  <meta name="csrf-token" content="" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/reset-senha.css" />
+  <script src="js/reset-senha.js" defer></script>
+</head>
+<body>
+  <div id="topProgress" class="top-progress" aria-hidden="true"></div>
+  <div id="topNotice" class="top-notice" role="status" aria-live="polite" hidden></div>
+
+  <div class="bg" aria-hidden="true">
+    <svg class="wave wave-top wave-black" viewBox="0 0 1440 320" preserveAspectRatio="none">
+      <path d="M0,64L60,80C120,96,240,128,360,149.3C480,171,600,181,720,165.3C840,149,960,107,1080,112C1200,117,1320,171,1380,197.3L1440,224L1440,0L0,0Z" />
+    </svg>
+    <svg class="wave wave-top wave-red" viewBox="0 0 1440 320" preserveAspectRatio="none">
+      <path d="M0,192L80,165.3C160,139,320,85,480,96C640,107,800,181,960,202.7C1120,224,1280,192,1360,176L1440,160L1440,0L0,0Z" />
+    </svg>
+
+    <svg class="wave wave-bottom wave-black" viewBox="0 0 1440 320" preserveAspectRatio="none">
+      <path d="M0,256L60,245.3C120,235,240,213,360,181.3C480,149,600,107,720,106.7C840,107,960,149,1080,186.7C1200,224,1320,256,1380,272L1440,288L1440,320L0,320Z" />
+    </svg>
+    <svg class="wave wave-bottom wave-red" viewBox="0 0 1440 320" preserveAspectRatio="none">
+      <path d="M0,288L80,282.7C160,277,320,267,480,224C640,181,800,107,960,96C1120,85,1280,139,1360,165.3L1440,192L1440,320L0,320Z" />
+    </svg>
+  </div>
+
+  <main class="page" role="main">
+    <section class="card" aria-labelledby="resetTitle">
+      <header class="brand">
+        <h1 id="resetTitle" class="title">Redefinir Senha</h1>
+        <p class="subtitle">Digite o código recebido por e-mail e sua nova senha</p>
+      </header>
+
+      <form id="resetForm" novalidate>
+        <div class="field">
+          <label for="code">Código de Verificação</label>
+          <input id="code" name="code" type="text"
+                 autocomplete="one-time-code"
+                 autocapitalize="off" spellcheck="false"
+                 required placeholder="Digite o código" maxlength="6" />
+          <small class="hint">Código de 6 caracteres enviado por e-mail</small>
+          <small class="err" id="codeErr" hidden></small>
+        </div>
+
+        <div class="field">
+          <label for="password">Nova Senha</label>
+          <div class="password-wrap">
+            <input id="password" name="password" type="password"
+                   autocomplete="new-password" required placeholder="••••••••" 
+                   minlength="6" />
+            <button class="eye" type="button" id="togglePwd1" aria-label="Mostrar ou ocultar senha" aria-pressed="false">👁</button>
+          </div>
+          <small class="hint">Mínimo de 6 caracteres</small>
+          <small class="err" id="passwordErr" hidden></small>
+        </div>
+
+        <div class="field">
+          <label for="confirmPassword">Confirmar Nova Senha</label>
+          <div class="password-wrap">
+            <input id="confirmPassword" name="confirmPassword" type="password"
+                   autocomplete="new-password" required placeholder="••••••••" 
+                   minlength="6" />
+            <button class="eye" type="button" id="togglePwd2" aria-label="Mostrar ou ocultar senha" aria-pressed="false">👁</button>
+          </div>
+          <small class="err" id="confirmErr" hidden></small>
+        </div>
+
+        <button class="btn btn-primary full" id="submitBtn" type="submit">
+          <span class="btn-label">Redefinir Senha</span>
+          <span class="spinner" aria-hidden="true"></span>
+        </button>
+
+        <div class="row center">
+          <a class="link" href="login.html" id="backLink">Voltar ao login</a>
+        </div>
+
+        <div class="form-msg" id="formMsg" role="status" aria-live="polite"></div>
+      </form>
+    </section>
+  </main>
+
+  <footer class="app-footer" role="contentinfo">
+    <small>© 2025 Araplac Móveis</small>
+  </footer>
+</body>
+</html>
