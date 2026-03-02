@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Portaria • Araplac</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="./css/dashboard.css">
+    <link rel="stylesheet" href="./css/portaria.css">
+</head>
+
+<body>
+    <header class="app-header">
+        <div class="container header-row">
+            <a href="dashboard.html" class="brand d-flex align-items-center gap-3">
+                <img src="./img/logo.png" alt="Araplac" class="brand-logo">
+            </a>
+
+            <div class="session ms-auto">
+                <div class="dropdown">
+                    <button class="btn-profile dropdown-toggle" type="button" id="profileDropdown"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        <div class="profile-avatar">
+                            <i class="bi bi-person-circle"></i>
+                        </div>
+                        <span>Usuário</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+                        <li>
+                            <a class="dropdown-item" href="#">
+                                <i class="bi bi-person me-2"></i>
+                                Meu Perfil
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="#">
+                                <i class="bi bi-gear me-2"></i>
+                                Configurações
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="#">
+                                <i class="bi bi-shield-check me-2"></i>
+                                Privacidade
+                            </a>
+                        </li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li>
+                            <button class="dropdown-item text-danger" type="button" data-bs-toggle="modal"
+                                data-bs-target="#logoutModal">
+                                <i class="bi bi-box-arrow-right me-2"></i>
+                                Sair
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="app-main">
+        <div class="container py-5">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3 class="fw-bold">Portaria • Controle de Acesso</h3>
+                <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#historicoModal">
+                    <i class="bi bi-clock-history me-2"></i>Histórico de Entregas
+                </button>
+            </div>
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">Dar Baixa na Nota Fiscal</h5>
+                    <form id="checkinForm" class="row g-3">
+                        <div class="col-md-3">
+                            <label class="form-label fw-semibold">Nota Fiscal</label>
+                            <input type="text" class="form-control" id="notaFiscal" placeholder="Número da NF" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label fw-semibold">Motorista</label>
+                            <input type="text" class="form-control" id="motorista" placeholder="Nome do motorista"
+                                required>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label fw-semibold">Placa</label>
+                            <input type="text" class="form-control" id="placa" placeholder="Placa" required>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label fw-semibold">Setor Responsável</label>
+                            <select class="form-select" id="setor" required>
+                                <option value="" selected disabled>Selecione</option>
+                                <option value="Almoxarifado">Almoxarifado</option>
+                                <option value="Carregamento">Carregamento</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2 d-flex align-items-end">
+                            <button type="submit" class="btn btn-danger w-100">
+                                <i class="bi bi-check-circle me-2"></i>Registrar Chegada
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">Fila de Espera</h5>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead>
+                                <tr>
+                                    <th>NF</th>
+                                    <th>Motorista</th>
+                                    <th>Placa</th>
+                                    <th>Setor</th>
+                                    <th>Tempo em Espera</th>
+                                    <th class="text-end">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="queueTable">
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="queueEmptyMessage" class="text-center text-muted py-4" style="display: none;">
+                        Nenhum caminhão na fila de espera.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="app-footer">
+        <div class="container text-center">
+            © 2025 Araplac Móveis — Almoxarifado
+        </div>
+    </footer>
+
+    <div class="modal fade" id="historicoModal" tabindex="-1" aria-labelledby="historicoModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title fw-bold" id="historicoModalLabel">
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-5">
+                            <label class="form-label fw-semibold">Buscar por Nota Fiscal</label>
+                            <input type="text" class="form-control" id="filtroNF" placeholder="Digite a NF">
+                        </div>
+                        <div class="col-md-5">
+                            <label class="form-label fw-semibold">Filtrar por Data</label>
+                            <input type="date" class="form-control" id="filtroData">
+                        </div>
+                        <div class="col-md-2 d-flex align-items-end">
+                            <button class="btn btn-secondary w-100" onclick="limparFiltros()">
+                                <i class="bi bi-eraser"></i> Limpar
+                            </button>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover align-middle">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>NF</th>
+                                    <th>Motorista</th>
+                                    <th>Placa</th>
+                                    <th>Setor</th>
+                                    <th>Data/Hora Entrada</th>
+                                </tr>
+                            </thead>
+                            <tbody id="historicoTableBody">
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="historicoEmptyMessage" class="text-center text-muted py-3" style="display: none;">
+                        Nenhum registro encontrado.
+                    </div>
+                </div>
+                <div class="modal-footer border-0 bg-light">
+                    <button type="button" class="btn btn-danger px-4" data-bs-dismiss="modal">
+                        <i class="bi bi-x me-1"></i>Fechar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="removeConfirmModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title fw-bold">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                        Confirmar Remoção
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4 text-center">
+                    <div class="mb-4">
+                        <i class="bi bi-exclamation-triangle-fill warning-icon"></i>
+                    </div>
+                    <h5 class="mb-3">Deseja realmente remover este caminhão da fila?</h5>
+                    <p class="mb-0">
+                        <strong id="removeTruckInfo"></strong> será removido.
+                    </p>
+                    <div class="delete-warning mt-4">
+                        <i class="bi bi-info-circle-fill text-danger me-2"></i>
+                        <span class="text-dark">Esta ação não poderá ser desfeita.</span>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 bg-light">
+                    <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">
+                        <i class="bi bi-x me-1"></i>Cancelar
+                    </button>
+                    <button type="button" class="btn btn-danger px-4" onclick="confirmRemove()">
+                        <i class="bi bi-trash me-1"></i>Remover Permanentemente
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="logoutModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title fw-bold">
+                        <i class="bi bi-box-arrow-right me-2"></i>
+                        Sair do Sistema
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4 text-center">
+                    <p>Tem certeza que deseja encerrar sua sessão?</p>
+                </div>
+                <div class="modal-footer border-0 bg-light">
+                    <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">
+                        <i class="bi bi-x me-1"></i>Cancelar
+                    </button>
+                    <a href="login.html" class="btn btn-danger px-4">
+                        <i class="bi bi-check-circle me-1"></i>Sair
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="confirmEntradaModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content border-success">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title">Confirmar Entrada</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    Deseja confirmar a entrada deste caminhão?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-success" onclick="confirmarEntrada()">Confirmar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="alertContainer"></div>
+
+    <script src="./js/portaria.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

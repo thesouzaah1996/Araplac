@@ -17,7 +17,6 @@ document.addEventListener('DOMContentLoaded', function () {
     deleteModal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
     loadProducts();
     
-    // Adicionar evento de input com debounce
     document.getElementById('searchInput').addEventListener('input', function() {
         clearTimeout(searchTimeout);
         searchTimeout = setTimeout(searchProducts, 500);
@@ -50,7 +49,6 @@ async function searchProducts() {
     const input = document.getElementById('searchInput').value.trim();
     
     if (!input) {
-        // Se busca vazia, volta para lista completa
         filteredProducts = [...allProducts];
         isSearching = false;
         currentPage = 1;
@@ -73,7 +71,6 @@ async function searchProducts() {
             renderCurrentPage();
             updateSearchInfo(`Encontrados ${filteredProducts.length} resultados para "${input}"`);
         } else {
-            // Se não encontrar produtos
             filteredProducts = [];
             isSearching = true;
             currentPage = 1;
@@ -83,7 +80,6 @@ async function searchProducts() {
         }
     } catch (error) {
         if (error.message.includes('404')) {
-            // Produto não encontrado (404)
             filteredProducts = [];
             isSearching = true;
             currentPage = 1;
@@ -126,11 +122,9 @@ function hideSearchLoading() {
 }
 
 function showLoading() {
-    // Implementar se necessário
 }
 
 function hideLoading() {
-    // Implementar se necessário
 }
 
 function updatePagination() {
@@ -231,7 +225,6 @@ function openAddModal() {
     document.getElementById('productForm').reset();
     document.getElementById('productId').value = '';
     
-    // Remover classes de erro e mensagens
     document.querySelectorAll('.form-control').forEach(el => {
         el.classList.remove('is-invalid');
     });
@@ -257,7 +250,6 @@ async function editProduct(id) {
             document.getElementById('categoryId').value = p.categoryId || '';
             document.getElementById('description').value = p.description || '';
             
-            // Remover classes de erro e mensagens
             document.querySelectorAll('.form-control').forEach(el => {
                 el.classList.remove('is-invalid');
             });

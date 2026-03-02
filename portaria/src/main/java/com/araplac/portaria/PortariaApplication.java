@@ -1,13 +1,13 @@
-package com.araplac.almoxarifado_araplac;
+package com.araplac.portaria;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class AlmoxarifadoAraplacApplication {
+public class PortariaApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(AlmoxarifadoAraplacApplication.class, args);
+		SpringApplication.run(PortariaApplication.class, args);
 	}
 
 }

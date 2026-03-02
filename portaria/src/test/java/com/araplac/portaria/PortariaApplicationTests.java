@@ -1,10 +1,10 @@
-package com.araplac.mscloudgateway;
+package com.araplac.portaria;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class MscloudgatewayApplicationTests {
+class PortariaApplicationTests {
 
 	@Test
 	void contextLoads() {

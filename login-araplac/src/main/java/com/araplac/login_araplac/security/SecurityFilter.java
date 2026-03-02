@@ -36,7 +36,7 @@ public class SecurityFilter {
                         ex.accessDeniedHandler(customAccessDenialHandler)
                                 .authenticationEntryPoint(customAuthenticationEntryPoint))
                 .authorizeHttpRequests(req -> req
-                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/login/**").permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(mag ->
                         mag.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

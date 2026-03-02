@@ -1,10 +1,8 @@
 spring:
+  application:
+    name: araplac-portaria
   config:
     import: optional:file:.env[.properties]
-
-
-  application:
-    name: araplac-almoxarifado
 
   datasource:
     url: ${LOCAL_DB_URL}
@@ -16,12 +14,12 @@ spring:
       ddl-auto: update
 
 server:
-  port: ${PORT}
+  port: 0
 
 eureka:
   client:
     service-url:
-      defaultZone: ${DEFAULT_ZONE}
+      defaultZone: http://localhost:8761/eureka
   instance:
     instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
     prefer-ip-address: true
